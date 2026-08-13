@@ -1,13 +1,47 @@
-import React from 'react'
-import { FaGithub } from "react-icons/fa";
-const Home = () => {
-  return (
-    <div className="flex justify-center h-screen w-full items-center">
-      <button type="" className="flex justify-center items-center gap-4 bg-black text-white p-3 rounded-xl">
-        <FaGithub /> Login with Github
-      </button>
-    </div>
-  )
+import { useState } from 'react';
+import { FaCloud, FaDocker, FaAws, FaGoogle, FaMicrosoft } from 'react-icons/fa';
+import { HiArrowRight, HiChartBar, HiCheck, HiMenu, HiOutlineRefresh, HiOutlineShieldCheck, HiOutlineStatusOnline, HiX } from 'react-icons/hi';
+import { HiServer } from 'react-icons/hi2';
+
+const Icon = ({ children }: { children: React.ReactNode }) => <div className="df-icon">{children}</div>;
+
+const features = [
+  ['Multi-Cloud Deployment', 'Deploy containerized applications across AWS, GCP, and Azure from one control plane.', <HiServer />],
+  ['Automatic Failover', 'Detect infrastructure failures and redirect traffic to a healthy backup provider.', <HiOutlineRefresh />],
+  ['Zero-Downtime Deployments', 'Keep applications available while deployments and infrastructure changes happen.', <HiOutlineStatusOnline />],
+  ['Centralized Monitoring', 'Monitor application health, deployment status, logs, and cloud availability from one place.', <HiChartBar />],
+];
+
+function Brand() { return <a className="df-brand" href="#top"><span className="df-brand-icon"><FaCloud /><i /></span><span>Deploy<span>Forge</span></span></a>; }
+
+function Provider({ name, type, icon }: { name: string; type: string; icon: React.ReactNode }) {
+  return <div className={'provider-card ' + (type === 'Primary' ? 'primary' : '')}><div className="provider-top"><span className="provider-logo">{icon}</span><span className="status-dot" /></div><strong>{name}</strong><small>{type} Cloud</small><div className="provider-lines"><i /><i /><i /></div></div>;
 }
 
-export default Home
+function HeroVisual() {
+  return <div className="hero-visual">
+    <div className="diagram-source"><span className="source-icon"><FaDocker /></span><span><small>Source</small>Docker image</span><i className="source-ready"><HiCheck /></i></div>
+    <div className="topology-line"><i /></div>
+    <div className="control-node"><span className="node-halo" /><span className="control-icon"><FaCloud /></span><strong>DeployForge</strong><small>Control plane</small><em><span /> Orchestration active</em></div>
+    <div className="topology-branch"><i /><span /><i /></div>
+    <div className="mini-clouds"><div className="mini-cloud aws"><div><FaAws /><i /></div><span>AWS</span><small><b /> Primary</small></div><div className="mini-cloud gcp"><div><FaGoogle /></div><span>Google Cloud</span><small>Backup ready</small></div><div className="mini-cloud azure"><div><FaMicrosoft /></div><span>Microsoft Azure</span><small>Backup ready</small></div></div>
+    <div className="topology-line app-line"><i /></div><div className="app-node"><span className="app-icon"><HiServer /></span><span><small>Live environment</small>Running application</span><em><HiCheck /> Healthy</em></div>
+  </div>;
+}
+
+export default function Home() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const nav = ['Product', 'How It Works', 'Multi-Cloud', 'Reliability', 'Pricing'];
+  return <main id="top">
+    <header className="df-nav"><Brand /><nav className={menuOpen ? 'open' : ''}>{nav.map((item) => <a onClick={() => setMenuOpen(false)} href={'#' + item.toLowerCase().replaceAll(' ', '-')} key={item}>{item}</a>)}<a className="mobile-signin" href="/login">Sign In</a></nav><div className="nav-actions"><a href="/login">Sign In</a><a className="button small" href="#get-started">Get Started <HiArrowRight /></a></div><button className="menu-button" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <HiX /> : <HiMenu />}</button></header>
+    <section className="hero section"><div className="hero-copy"><div className="eyebrow"><span className="live-dot" /> Multi-Cloud Infrastructure</div><h1>Deploy Once.<br />Run Everywhere.<br /><span>Stay Available.</span></h1><p>Deploy your Docker applications across AWS, GCP, and Azure with automated health monitoring and intelligent failover.</p><div className="hero-buttons"><a className="button" href="#get-started">Deploy Your First App <HiArrowRight /></a><a className="text-button" href="#how-it-works">See How It Works <span>→</span></a></div><div className="hero-note"><HiOutlineShieldCheck /> Built for reliable, multi-cloud deployments</div></div><HeroVisual /></section>
+    <section className="failover-strip"><div><span className="eyebrow">Automatic Failover</span><h2>Zero-Downtime Deployment</h2><p>When infrastructure fails, DeployForge automatically redirects traffic to a healthy cloud provider.</p></div><div className="failover-flow"><span className="flow-step ok">AWS Healthy</span><b>→</b><span className="flow-step issue">AWS Failure</span><b>→</b><span className="flow-step check">Health Check</span><b>→</b><span className="flow-step active">GCP Activated</span><b>→</b><span className="flow-step active">Traffic Redirected</span></div></section>
+    <section className="section feature-section" id="product"><div className="section-title"><span className="eyebrow">Purpose-built for reliability</span><h2>Everything you need to deploy with confidence</h2><p>One simple platform to deploy, monitor, and keep your applications available across clouds.</p></div><div className="features-grid">{features.map(([title, text, icon]) => <article className="feature-card" key={title as string}><Icon>{icon}</Icon><h3>{title}</h3><p>{text}</p><a href="#get-started">Learn more <HiArrowRight /></a></article>)}</div></section>
+    <section className="how-section section" id="how-it-works"><div className="section-title center"><span className="eyebrow">Simple by design</span><h2>From Docker Image to Production</h2><p>DeployForge handles the complexity, so your team can keep shipping.</p></div><div className="steps">{[['01', 'Connect', 'Connect your application or container image.'], ['02', 'Configure', 'Choose cloud providers, resources, and deployment settings.'], ['03', 'Deploy', 'Deploy across your selected cloud infrastructure.'], ['04', 'Stay Available', 'We continuously monitor health and automatically handle failover.']].map(([n, t, d]) => <article className="step" key={n}><span>{n}</span><div className="step-marker"><HiCheck /></div><h3>{t}</h3><p>{d}</p></article>)}</div></section>
+    <section className="cloud-section" id="multi-cloud"><div className="section-title center"><span className="eyebrow">Built for multi-cloud</span><h2>One Platform. Three Clouds.</h2><p>Choose a primary cloud and know your workloads have a healthy place to go.</p></div><div className="cloud-architecture"><div className="central-plane"><FaCloud /><strong>DeployForge</strong><small>Control Plane</small></div><div className="architecture-lines" /><div className="provider-grid"><Provider name="AWS" type="Primary" icon={<FaAws />} /><Provider name="Google Cloud" type="Backup" icon={<FaGoogle />} /><Provider name="Microsoft Azure" type="Backup" icon={<FaMicrosoft />} /></div></div></section>
+    <section className="reliability" id="reliability"><div className="reliability-copy"><span className="eyebrow">Built to keep you moving</span><h2>Your application shouldn&apos;t depend on a single cloud.</h2><p>DeployForge continuously monitors your application and cloud infrastructure. When a provider becomes unavailable, traffic can be redirected to a healthy backup environment.</p><div className="badges"><span><HiOutlineShieldCheck /> Automatic Health Monitoring</span><span><HiOutlineRefresh /> Multi-Cloud Failover</span></div></div><div className="traffic-card"><div className="traffic-label"><span className="status-dot" /> Live traffic routing</div><div className="traffic-flow"><div>Users</div><b>↓</b><div>Global Traffic</div><b>↓</b><div className="route-good"><FaAws /> AWS <small>Primary healthy</small></div><b className="alt-arrow">⇄</b><div className="route-backup"><FaGoogle /> GCP <small>Ready to fail over</small></div><b>↓</b><div><HiServer /> Application</div></div></div></section>
+    <section className="developer section"><div className="code-card"><div className="code-top"><span><i /><i /><i /></span>deployforge.yaml</div><pre><code><b>app</b>: my-app{`\n`}<b>image</b>: my-registry/my-app:latest{`\n\n`}<b>primary</b>: aws{`\n`}<b>backup</b>:{`\n`}  - gcp{`\n`}  - azure{`\n\n`}<b>healthCheck</b>: enabled{`\n`}<b>failover</b>: automatic</code></pre></div><div className="developer-copy"><span className="eyebrow">Developer experience</span><h2>Infrastructure without the infrastructure headache.</h2><p>Configure your deployment once and let DeployForge coordinate the rest across every cloud.</p><ul>{['Simple configuration', 'Automated deployments', 'Health monitoring', 'Deployment history', 'Rollbacks', 'Multi-cloud support'].map(i => <li key={i}><HiCheck /> {i}</li>)}</ul></div></section>
+    <section className="final-cta" id="get-started"><span className="eyebrow">Start building today</span><h2>Ready to deploy without downtime?</h2><p>Deploy your first application with DeployForge and let your infrastructure handle the rest.</p><a className="button white" href="/login">Start Deploying <HiArrowRight /></a><small>No complex infrastructure setup required.</small></section>
+    <footer className="df-footer"><div className="footer-main"><div><Brand /><p>Multi-cloud deployment infrastructure built for reliability.</p></div>{[['Product', 'Features', 'Deployments', 'Monitoring', 'Reliability'], ['Resources', 'Documentation', 'Architecture', 'Guides', 'API'], ['Company', 'About', 'Contact', 'GitHub'], ['Legal', 'Privacy', 'Terms', 'Security']].map(([h, ...links]) => <div className="footer-col" key={h}><strong>{h}</strong>{links.map(l => <a href="#top" key={l}>{l}</a>)}</div>)}</div><div className="footer-bottom">© 2026 DeployForge. All rights reserved.<span>Designed for reliable deployments.</span></div></footer>
+  </main>;
+}
