@@ -5,6 +5,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom"
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Sidebar from './pages/DashBoard/Sidebar';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 function App() {
 
@@ -15,6 +16,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/myDashboard" element={<Sidebar />} />
       </Routes>
+      <ReactQueryDevtools/>
     </BrowserRouter>
   )
 }
