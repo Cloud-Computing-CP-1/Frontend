@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import PublicNavbar from './Components/PublicNavbar';
 import { FaCloud, FaDocker, FaAws, FaGoogle, FaMicrosoft } from 'react-icons/fa';
-import { HiArrowRight, HiChartBar, HiCheck, HiMenu, HiOutlineRefresh, HiOutlineShieldCheck, HiOutlineStatusOnline, HiX } from 'react-icons/hi';
+import { HiArrowRight, HiChartBar, HiCheck, HiOutlineRefresh, HiOutlineShieldCheck, HiOutlineStatusOnline } from 'react-icons/hi';
 import { HiServer } from 'react-icons/hi2';
 
 const Icon = ({ children }: { children: React.ReactNode }) => <div className="df-icon">{children}</div>;
@@ -30,10 +30,8 @@ function HeroVisual() {
 }
 
 export default function Home() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const nav = ['Product', 'How It Works', 'Multi-Cloud', 'Reliability', 'Pricing'];
   return <main id="top">
-    <header className="df-nav"><Brand /><nav className={menuOpen ? 'open' : ''}>{nav.map((item) => <a onClick={() => setMenuOpen(false)} href={'#' + item.toLowerCase().replaceAll(' ', '-')} key={item}>{item}</a>)}<a className="mobile-signin" href="/login">Sign In</a></nav><div className="nav-actions"><a href="/login">Sign In</a><a className="button small" href="#get-started">Get Started <HiArrowRight /></a></div><button className="menu-button" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <HiX /> : <HiMenu />}</button></header>
+    <PublicNavbar />
     <section className="hero section"><div className="hero-copy"><div className="eyebrow"><span className="live-dot" /> Multi-Cloud Infrastructure</div><h1>Deploy Once.<br />Run Everywhere.<br /><span>Stay Available.</span></h1><p>Deploy your Docker applications across AWS, GCP, and Azure with automated health monitoring and intelligent failover.</p><div className="hero-buttons"><a className="button" href="#get-started">Deploy Your First App <HiArrowRight /></a><a className="text-button" href="#how-it-works">See How It Works <span>→</span></a></div><div className="hero-note"><HiOutlineShieldCheck /> Built for reliable, multi-cloud deployments</div></div><HeroVisual /></section>
     <section className="failover-strip"><div><span className="eyebrow">Automatic Failover</span><h2>Zero-Downtime Deployment</h2><p>When infrastructure fails, DeployForge automatically redirects traffic to a healthy cloud provider.</p></div><div className="failover-flow"><span className="flow-step ok">AWS Healthy</span><b>→</b><span className="flow-step issue">AWS Failure</span><b>→</b><span className="flow-step check">Health Check</span><b>→</b><span className="flow-step active">GCP Activated</span><b>→</b><span className="flow-step active">Traffic Redirected</span></div></section>
     <section className="section feature-section" id="product"><div className="section-title"><span className="eyebrow">Purpose-built for reliability</span><h2>Everything you need to deploy with confidence</h2><p>One simple platform to deploy, monitor, and keep your applications available across clouds.</p></div><div className="features-grid">{features.map(([title, text, icon]) => <article className="feature-card" key={title as string}><Icon>{icon}</Icon><h3>{title}</h3><p>{text}</p><a href="#get-started">Learn more <HiArrowRight /></a></article>)}</div></section>

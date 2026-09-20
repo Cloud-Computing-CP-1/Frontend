@@ -24,6 +24,7 @@ import BuildProgress from "./Components/BuildProgress";
 import BuildDetails, { type BuildResult } from "./Components/BuildDetails";
 import type { RepoItem } from "./Components/AllRepo";
 import { UseStateContext } from "../context/AuthContext";
+import { UsegetProjectEnv } from "../React-Query/GetProjectEnv";
 
 interface EnvVar {
   id: string;
@@ -36,6 +37,9 @@ const BuildPipeline = () => {
   const location = useLocation();
   const { axiosInstance } = UseStateContext()!
   const passedRepo: RepoItem | undefined = location.state?.repo;
+  const projectId: string | undefined = location.state?.projectId;
+  const { data: projectEnv = [], isLoading: envLoading, isError: envLoadError, refetch: refetchEnv } = UsegetProjectEnv(projectId);
+  const hasProjectEnv = projectEnv.length > 0;
 
   const repo: RepoItem = passedRepo || {
     id: "demo-repo-1",
@@ -47,7 +51,7 @@ const BuildPipeline = () => {
     fork: false,
     updated_at: new Date().toISOString(),
   };
-
+  console.log(passedRepo)
   // Flow: select repository -> configure -> build image -> deploy image -> live
   const [phase, setPhase] = useState<"config" | "building" | "image-built" | "deploying" | "live">("config");
 
@@ -60,6 +64,15 @@ const BuildPipeline = () => {
   const [bulkEnv, setBulkEnv] = useState("");
   const [envNotice, setEnvNotice] = useState("");
   const [envError, setEnvError] = useState("");
+  const [hasImportedEnv, setHasImportedEnv] = useState(false);
+  const [envSaved, setEnvSaved] = useState(false);
+  const [envSaving, setEnvSaving] = useState(false);
+  const [showStoredEnv, setShowStoredEnv] = useState(false);
+
+  const markEnvDirty = () => {
+    setEnvSaved(false);
+    setEnvNotice("");
+  };
 
   const importEnv = () => {
     const parsed = new Map<string, string>();
@@ -96,7 +109,9 @@ const BuildPipeline = () => {
     setShowSecretMap({});
     setBulkEnv("");
     setEnvError("");
-    setEnvNotice(parsed.size + " variables imported. Review them below before deploying.");
+    setHasImportedEnv(true);
+    setEnvSaved(false);
+    setEnvNotice(parsed.size + " variables imported. Review them below, then save before deploying.");
   };
 
   // Build configuration options
@@ -180,16 +195,19 @@ const BuildPipeline = () => {
   const addEnvVar = () => {
     const newId = Date.now().toString();
     setEnvVars((prev) => [...prev, { id: newId, key: "", value: "", isSecret: false }]);
+    markEnvDirty();
   };
 
   const removeEnvVar = (id: string) => {
     setEnvVars((prev) => prev.filter((item) => item.id !== id));
+    markEnvDirty();
   };
 
-  const updateEnvVar = (id: string, field: "key" | "value" | "isSecret", val: any) => {
+  const updateEnvVar = (id: string, field: "key" | "value" | "isSecret", val: string | boolean) => {
     setEnvVars((prev) =>
       prev.map((item) => (item.id === id ? { ...item, [field]: val } : item))
     );
+    markEnvDirty();
   };
 
   const toggleShowSecret = (id: string) => {
@@ -200,6 +218,8 @@ const BuildPipeline = () => {
   const handleBuildImage = async () => {
     if (requestBusy.current || phase === "building") return;
     const repoUrl = passedRepo?.clone_url || passedRepo?.html_url;
+    const repo_id = passedRepo?.id
+    const default_branch = passedRepo?.default_branch;
     if (!repoUrl) {
       setBuildError("Select a GitHub repository before building.");
       return;
@@ -212,9 +232,10 @@ const BuildPipeline = () => {
     setPollError("");
     setLogs([]);
     try {
-      const response = await axiosInstance.post("/build/image", { repo: repoUrl });
+      const projectid = location.state?.projectId
+      const response = await axiosInstance.post("/build/image", { repo: repoUrl, repo_id: repo_id, repo_branch: default_branch, project_id: projectid });
       const result: BuildResult = response.data.responseData;
-      console.log(result)
+
       if (!response.data.Status || !result?.id || !result.image || !result.project || !result.repository) {
         throw new Error(response.data.Sendmessage || "The build service returned an incomplete response.");
       }
@@ -232,16 +253,52 @@ const BuildPipeline = () => {
       requestBusy.current = false;
     }
   };
-
+  const saveEnv = async () => {
+    if (!projectId) {
+      setEnvError("Open a project to save its environment variables.");
+      return;
+    }
+    if (bulkEnv.trim()) {
+      setEnvError("Import or clear the pasted variables before saving.");
+      return;
+    }
+    const keys = envVars.map(variable => variable.key);
+    if (keys.some(key => !/^[A-Za-z_][A-Za-z0-9_]*$/.test(key)) || new Set(keys).size !== keys.length) {
+      setEnvError("Give each variable a valid, unique name, or remove empty rows.");
+      return;
+    }
+    setEnvSaving(true);
+    setEnvError("");
+    setEnvNotice("");
+    try {
+      const env = Object.fromEntries(envVars.map(variable => [variable.key, variable.value]));
+      const response = await axiosInstance.post("/project/Addenv", { project_id: projectId, env }, { timeout: 10000 });
+      if (!response.data.Status) throw new Error(response.data.Sendmessage || "The server did not save the variables.");
+      const refreshed = await refetchEnv();
+      if (refreshed.isError || !refreshed.data?.length) throw new Error("Saved variables could not be verified.");
+      setEnvSaved(true);
+      setEnvNotice("Environment variables saved for this project.");
+    } catch {
+      setEnvSaved(false);
+      setEnvError("Environment variables could not be saved. Please retry before deploying.");
+    } finally {
+      setEnvSaving(false);
+    }
+  };
   // STEP 2: Deploy Image to Cluster (Triggered by 'Deploy Image' button)
   const handleDeployImage = () => {
     if (phase !== "image-built") return;
+    if (projectId && (envLoading || envLoadError)) return;
+    if (hasImportedEnv && !envSaved) {
+      setEnvError("Save the imported environment variables before deploying.");
+      return;
+    }
     if (bulkEnv.trim()) {
       setEnvError("Import or clear the pasted variables before deploying.");
       return;
     }
-    const keys = envVars.map(v => v.key);
-    if (keys.some(key => !/^[A-Za-z_][A-Za-z0-9_]*$/.test(key)) || new Set(keys).size !== keys.length) {
+    const keys = hasProjectEnv ? projectEnv.map(variable => variable.key) : envVars.map(v => v.key);
+    if (!hasProjectEnv && (keys.some(key => !/^[A-Za-z_][A-Za-z0-9_]*$/.test(key)) || new Set(keys).size !== keys.length)) {
       setEnvError("Give each variable a valid, unique name, or remove empty rows.");
       return;
     }
@@ -254,7 +311,7 @@ const BuildPipeline = () => {
       { text: `======================================================`, delay: 400 },
       { text: `[Kubernetes] ➔ Connecting to cluster control plane (us-east-1-cluster)...`, delay: 600 },
       { text: `[Kubernetes] ➔ Pulling verified image: ${imageTag}...`, delay: 900 },
-      { text: `[Kubernetes] ➔ Injected runtime environment variables (${envVars.map((e) => e.key).join(", ")}).`, delay: 1200 },
+      { text: `[Kubernetes] ➔ Injected runtime environment variables (${keys.join(", ")}).`, delay: 1200 },
       { text: `[Kubernetes] ➔ Provisioning Pod replica [deployforge-pod-${shortImageId}-8x92k]...`, delay: 1500 },
       { text: `[Kubernetes] ➔ Container started on port 3000 (status: Running).`, delay: 1800 },
       { text: `[Ingress]    ➔ Binding domain ${liveUrl} -> Cluster Ingress Controller...`, delay: 2100 },
@@ -287,11 +344,11 @@ const BuildPipeline = () => {
       <header className="h-16 bg-white border-b border-slate-200 px-4 sm:px-8 flex items-center justify-between sticky top-0 z-30 shadow-xs">
         <div className="flex items-center gap-3 sm:gap-6">
           <Link
-            to="/myDashboard"
+            to={location.state?.projectId ? `/projects/${location.state.projectId}` : "/dashboard"}
             className="flex items-center gap-2 text-slate-500 hover:text-slate-900 transition text-xs font-semibold"
           >
             <FiArrowLeft className="w-4 h-4" />
-            <span className="hidden sm:inline">Back to Dashboard</span>
+            <span className="hidden sm:inline">Back to {location.state?.projectId ? "Project" : "Dashboard"}</span>
           </Link>
 
           <div className="h-4 w-px bg-slate-200 hidden sm:block" />
@@ -361,8 +418,8 @@ const BuildPipeline = () => {
 
             {/* Step 1: Environment & Config */}
             <div className={`p-3.5 rounded-xl border transition ${phase === "config"
-                ? "bg-blue-50/70 border-blue-200 text-blue-900"
-                : "bg-slate-50/80 border-slate-200 text-slate-700"
+              ? "bg-blue-50/70 border-blue-200 text-blue-900"
+              : "bg-slate-50/80 border-slate-200 text-slate-700"
               }`}>
               <div className="flex items-center justify-between mb-1.5">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Step 1</span>
@@ -378,10 +435,10 @@ const BuildPipeline = () => {
 
             {/* Step 2: Build Image */}
             <div className={`p-3.5 rounded-xl border transition ${phase === "building"
-                ? "bg-blue-50/70 border-blue-200 text-blue-900"
-                : phase === "image-built" || phase === "deploying" || phase === "live"
-                  ? "bg-slate-50/80 border-slate-200 text-slate-700"
-                  : "bg-white border-slate-200/60 opacity-60 text-slate-400"
+              ? "bg-blue-50/70 border-blue-200 text-blue-900"
+              : phase === "image-built" || phase === "deploying" || phase === "live"
+                ? "bg-slate-50/80 border-slate-200 text-slate-700"
+                : "bg-white border-slate-200/60 opacity-60 text-slate-400"
               }`}>
               <div className="flex items-center justify-between mb-1.5">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Step 2</span>
@@ -399,10 +456,10 @@ const BuildPipeline = () => {
 
             {/* Step 3: Verified Image Artifact */}
             <div className={`p-3.5 rounded-xl border transition ${phase === "image-built"
-                ? "bg-emerald-50/70 border-emerald-300 text-emerald-900 ring-2 ring-emerald-500/20"
-                : phase === "deploying" || phase === "live"
-                  ? "bg-slate-50/80 border-slate-200 text-slate-700"
-                  : "bg-white border-slate-200/60 opacity-60 text-slate-400"
+              ? "bg-emerald-50/70 border-emerald-300 text-emerald-900 ring-2 ring-emerald-500/20"
+              : phase === "deploying" || phase === "live"
+                ? "bg-slate-50/80 border-slate-200 text-slate-700"
+                : "bg-white border-slate-200/60 opacity-60 text-slate-400"
               }`}>
               <div className="flex items-center justify-between mb-1.5">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Step 3</span>
@@ -420,10 +477,10 @@ const BuildPipeline = () => {
 
             {/* Step 4: Deploy Image */}
             <div className={`p-3.5 rounded-xl border transition ${phase === "deploying"
-                ? "bg-indigo-50/70 border-indigo-200 text-indigo-900"
-                : phase === "live"
-                  ? "bg-emerald-50/80 border-emerald-200 text-emerald-900"
-                  : "bg-white border-slate-200/60 opacity-60 text-slate-400"
+              ? "bg-indigo-50/70 border-indigo-200 text-indigo-900"
+              : phase === "live"
+                ? "bg-emerald-50/80 border-emerald-200 text-emerald-900"
+                : "bg-white border-slate-200/60 opacity-60 text-slate-400"
               }`}>
               <div className="flex items-center justify-between mb-1.5">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Step 4</span>
@@ -504,6 +561,13 @@ const BuildPipeline = () => {
             <div className="mt-6 space-y-4">
               {/* Environment Variables Card */}
               <article className="bg-white border border-slate-200/90 rounded-2xl p-5 sm:p-6 shadow-xs">
+                {projectId && envLoading ? <p role="status" className="text-sm text-slate-500 py-4">Checking this project's environment variables...</p>
+                  : projectId && envLoadError ? <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">Could not load project environment variables. <button type="button" onClick={() => refetchEnv()} className="font-semibold underline cursor-pointer">Retry</button></div>
+                    : hasProjectEnv ? <>
+                      <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-4"><div><h3 className="flex items-center gap-2 text-sm font-bold text-slate-900"><FiKey className="w-4 h-4 text-blue-600" /> Environment configured</h3><p className="text-xs text-slate-500 mt-1">{projectEnv.length} variables are saved for this project. The image is ready for deployment.</p></div><span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-700">Ready to deploy</span></div>
+                      <div className="mt-4 flex items-center justify-between gap-3"><h4 className="text-xs font-semibold text-slate-700">Saved variables</h4><button type="button" onClick={() => setShowStoredEnv(value => !value)} aria-pressed={showStoredEnv} className="text-xs font-semibold text-blue-600 hover:underline cursor-pointer">{showStoredEnv ? "Hide values" : "Show values"}</button></div>
+                      <dl className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">{projectEnv.map(variable => <div key={variable.key} className="min-w-0 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2"><dt className="text-xs font-mono font-semibold text-slate-700 break-all">{variable.key}</dt><dd className="mt-1 text-xs font-mono text-slate-500 break-all">{showStoredEnv ? variable.value : "••••••••"}</dd></div>)}</dl>
+                    </> : <>
                 <div className="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
                   <div>
                     <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
@@ -530,7 +594,7 @@ const BuildPipeline = () => {
                   <textarea
                     id="bulk-env"
                     value={bulkEnv}
-                    onChange={e => { setBulkEnv(e.target.value); setEnvError(""); setEnvNotice(""); }}
+                    onChange={e => { setBulkEnv(e.target.value); setEnvError(""); markEnvDirty(); }}
                     placeholder={"NODE_ENV=production\nPORT=80\nAPI_URL=https://api.example.com"}
                     spellCheck={false}
                     autoComplete="off"
@@ -585,8 +649,8 @@ const BuildPipeline = () => {
                           type="button"
                           onClick={() => updateEnvVar(env.id, "isSecret", !env.isSecret)}
                           className={`text-[10px] font-medium px-2 py-1.5 rounded-md border transition cursor-pointer ${env.isSecret
-                              ? "bg-amber-50 text-amber-700 border-amber-200"
-                              : "bg-white text-slate-500 border-slate-200"
+                            ? "bg-amber-50 text-amber-700 border-amber-200"
+                            : "bg-white text-slate-500 border-slate-200"
                             }`}
                         >
                           {env.isSecret ? "Secret" : "Plain"}
@@ -608,6 +672,8 @@ const BuildPipeline = () => {
                   <FiKey className="w-3.5 h-3.5 text-slate-400" />
                   <span>These variables are used when the container starts.</span>
                 </div>
+                {hasImportedEnv && <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-blue-100 bg-blue-50/50 p-4"><div><p className="text-xs font-semibold text-slate-800">{envSaved ? "Variables saved" : "Save your imported variables"}</p><p className="text-[11px] text-slate-500 mt-1">{!location.state?.projectId ? "Open the build from a project to save variables." : envSaved ? "Changes will need to be saved again." : "Save these values to this project before deploying."}</p></div><button type="button" onClick={saveEnv} disabled={envSaved || envSaving || !location.state?.projectId} className="rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">{envSaving ? "Saving..." : envSaved ? "Saved" : "Save environment variables"}</button></div>}
+                    </>}
               </article>
 
 
@@ -615,7 +681,8 @@ const BuildPipeline = () => {
                 {/* 'Deploy Image' Button */}
                 <button
                   onClick={handleDeployImage}
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-6 py-2.5 rounded-xl shadow-md shadow-blue-500/20 transition cursor-pointer flex items-center justify-center gap-2 active:scale-98 shrink-0"
+                  disabled={envSaving || Boolean(projectId && (envLoading || envLoadError)) || (hasImportedEnv && !envSaved)}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-6 py-2.5 rounded-xl shadow-md shadow-blue-500/20 transition cursor-pointer flex items-center justify-center gap-2 active:scale-98 shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <FiPlay className="w-4 h-4 fill-current" />
                   <span>Deploy Application</span>

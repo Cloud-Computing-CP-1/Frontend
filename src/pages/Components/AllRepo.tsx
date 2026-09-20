@@ -30,10 +30,13 @@ export interface RepoItem {
     created_at?: string;
     pushed_at?: string;
     updated_at?: string;
+    owner?:owner
     archived?: boolean;
     [key: string]: any;
 }
-
+interface owner {
+    login:string
+}
 interface RepoShowProps {
     repos?: RepoItem[];
     onClose: () => void;
