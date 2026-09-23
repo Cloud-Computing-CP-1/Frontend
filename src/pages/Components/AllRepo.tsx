@@ -98,10 +98,10 @@ const RepoShow = ({ repos = [], onClose, onBuild }: RepoShowProps) => {
     }, [repos, search, filter]);
 
     return (
-        <div className="w-full h-full flex flex-col bg-[#f8fafc] overflow-y-auto">
+        <div className="w-full h-full flex flex-col bg-[var(--background)] overflow-y-auto">
 
             {/* Sticky Header */}
-            <div className="sticky top-0 z-20 bg-white border-b border-slate-200 shadow-xs shrink-0">
+            <div className="sticky top-0 z-20 bg-[var(--surface)] border-b border-[var(--border)] shadow-xs shrink-0">
                 <div className="w-full px-6 py-4">
 
                     {/* Header Title */}
@@ -109,16 +109,16 @@ const RepoShow = ({ repos = [], onClose, onBuild }: RepoShowProps) => {
 
                         <div className="flex items-center gap-3">
 
-                            <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center border border-blue-100 text-blue-600">
+                            <div className="w-9 h-9 rounded-xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20 text-blue-400">
                                 <FiGithub className="w-5 h-5" />
                             </div>
 
                             <div>
-                                <h1 className="text-lg font-semibold text-slate-900">
+                                <h1 className="text-lg font-semibold text-[var(--text-primary)]">
                                     Your repositories
                                 </h1>
 
-                                <p className="text-xs text-slate-500">
+                                <p className="text-xs text-[var(--text-secondary)]">
                                     Select a connected GitHub repository to build its container image
                                 </p>
                             </div>
@@ -127,8 +127,8 @@ const RepoShow = ({ repos = [], onClose, onBuild }: RepoShowProps) => {
 
                         <button
                             onClick={onClose}
-                            className="w-8 h-8 rounded-lg border border-slate-200
-                            flex items-center justify-center hover:bg-slate-100 transition cursor-pointer text-slate-500 hover:text-slate-700"
+                            className="w-8 h-8 rounded-lg border border-[var(--border)] bg-[var(--surface-secondary)]
+                            flex items-center justify-center hover:bg-[var(--surface-secondary)]/80 transition cursor-pointer text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
                         >
                             <X className="w-4 h-4" />
                         </button>
@@ -142,7 +142,7 @@ const RepoShow = ({ repos = [], onClose, onBuild }: RepoShowProps) => {
 
                             <Search
                                 className="absolute left-3 top-1/2 -translate-y-1/2
-                                w-4 h-4 text-slate-400"
+                                w-4 h-4 text-[var(--text-muted)]"
                             />
 
                             <input
@@ -151,9 +151,9 @@ const RepoShow = ({ repos = [], onClose, onBuild }: RepoShowProps) => {
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
                                 className="w-full h-9 pl-9 pr-3 rounded-lg
-                                border border-slate-200 bg-white text-sm
-                                outline-none focus:border-blue-500
-                                focus:ring-2 focus:ring-blue-100 transition"
+                                border border-[var(--border)] bg-[var(--surface-secondary)] text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)]
+                                outline-none focus:border-[var(--primary)]
+                                focus:ring-1 focus:ring-[var(--primary)] transition"
                             />
 
                         </div>
@@ -172,8 +172,8 @@ const RepoShow = ({ repos = [], onClose, onBuild }: RepoShowProps) => {
                                     className={`px-3.5 h-9 rounded-lg text-xs font-medium
                                     border transition cursor-pointer
                                     ${filter === value
-                                            ? "bg-blue-600 text-white border-blue-600 shadow-sm"
-                                            : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+                                            ? "bg-[var(--primary)] text-white border-[var(--primary)] shadow-sm"
+                                            : "bg-[var(--surface-secondary)] text-[var(--text-secondary)] border-[var(--border)] hover:bg-[var(--surface)] hover:text-[var(--text-primary)]"
                                         }`}
                                 >
                                     {label}
@@ -221,11 +221,11 @@ const RepoShow = ({ repos = [], onClose, onBuild }: RepoShowProps) => {
                 <div className="flex items-center justify-between mb-4">
 
                     <div>
-                        <h2 className="text-base font-semibold text-slate-900">
+                        <h2 className="text-base font-semibold text-[var(--text-primary)]">
                             Repositories
                         </h2>
 
-                        <p className="text-xs text-slate-500 mt-0.5">
+                        <p className="text-xs text-[var(--text-secondary)] mt-0.5">
                             Showing {filteredRepos.length} of {repos.length}
                         </p>
                     </div>
@@ -234,15 +234,15 @@ const RepoShow = ({ repos = [], onClose, onBuild }: RepoShowProps) => {
 
                 {filteredRepos.length === 0 ? (
 
-                    <div className="bg-white border border-slate-200 rounded-xl p-12 text-center shadow-xs">
+                    <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-12 text-center shadow-xs">
 
-                        <FiGithub className="w-10 h-10 mx-auto text-slate-300" />
+                        <FiGithub className="w-10 h-10 mx-auto text-[var(--text-muted)]" />
 
-                        <h3 className="mt-3 text-sm font-semibold text-slate-800">
+                        <h3 className="mt-3 text-sm font-semibold text-[var(--text-primary)]">
                             No repositories found
                         </h3>
 
-                        <p className="text-xs text-slate-500 mt-1">
+                        <p className="text-xs text-[var(--text-secondary)] mt-1">
                             Try changing your search or filter.
                         </p>
 
@@ -297,7 +297,7 @@ const RepositoryCard = ({ repo, onClick, onBuild }: RepositoryCardProps) => {
     return (
         <div
             onClick={onClick}
-            className="bg-white border border-slate-200/90 rounded-xl p-4 cursor-pointer hover:border-blue-300 hover:shadow-md transition-all duration-200 flex flex-col justify-between group"
+            className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-4 cursor-pointer hover:border-[var(--border-secondary)] hover:shadow-md transition-all duration-200 flex flex-col justify-between group"
         >
 
             <div>
@@ -306,7 +306,7 @@ const RepositoryCard = ({ repo, onClick, onBuild }: RepositoryCardProps) => {
 
                     <div className="flex items-center gap-2.5 min-w-0">
 
-                        <div className="w-8 h-8 rounded-lg bg-blue-50/80 border border-blue-100 flex items-center justify-center text-blue-600 shrink-0 group-hover:bg-blue-600 group-hover:text-white transition">
+                        <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 shrink-0 group-hover:bg-[var(--primary)] group-hover:text-white transition">
                             <FiGithub className="w-4 h-4" />
                         </div>
 
@@ -314,24 +314,24 @@ const RepositoryCard = ({ repo, onClick, onBuild }: RepositoryCardProps) => {
 
                             <div className="flex items-center gap-2 flex-wrap">
 
-                                <h3 className="text-sm font-bold text-slate-900 truncate group-hover:text-blue-600 transition">
+                                <h3 className="text-sm font-bold text-[var(--text-primary)] truncate group-hover:text-blue-400 transition">
                                     {repo.name}
                                 </h3>
 
                                 {repo.private ? (
-                                    <span className="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200">
+                                    <span className="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">
                                         <Lock className="w-2.5 h-2.5" />
                                         Private
                                     </span>
                                 ) : (
-                                    <span className="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                    <span className="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                                         <Globe className="w-2.5 h-2.5" />
                                         Public
                                     </span>
                                 )}
 
                                 {repo.archived && (
-                                    <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-500">
+                                    <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-md bg-[var(--surface-secondary)] text-[var(--text-muted)] border border-[var(--border)]">
                                         Archived
                                     </span>
                                 )}
@@ -342,26 +342,26 @@ const RepositoryCard = ({ repo, onClick, onBuild }: RepositoryCardProps) => {
 
                     </div>
 
-                    <ExternalLink className="w-3.5 h-3.5 text-slate-300 group-hover:text-slate-500 shrink-0 transition" />
+                    <ExternalLink className="w-3.5 h-3.5 text-[var(--text-muted)] group-hover:text-[var(--text-secondary)] shrink-0 transition" />
 
                 </div>
 
                 {/* Optional description (only if provided) */}
                 {repo.description && (
-                    <p className="text-xs text-slate-600 mt-2.5 line-clamp-2">
+                    <p className="text-xs text-[var(--text-secondary)] mt-2.5 line-clamp-2">
                         {repo.description}
                     </p>
                 )}
             </div>
 
             {/* Bottom Meta & Build Action */}
-            <div className={`flex items-center justify-between gap-3 pt-3 border-t border-slate-100 ${repo.description ? "mt-3" : "mt-4"}`}>
+            <div className={`flex items-center justify-between gap-3 pt-3 border-t border-[var(--border)] ${repo.description ? "mt-3" : "mt-4"}`}>
 
-                <div className="flex items-center gap-3 flex-wrap text-xs text-slate-500">
+                <div className="flex items-center gap-3 flex-wrap text-xs text-[var(--text-secondary)]">
 
                     {/* Primary Language */}
                     {repo.language ? (
-                        <div className="flex items-center gap-1.5 font-medium text-slate-700 text-xs">
+                        <div className="flex items-center gap-1.5 font-medium text-[var(--text-secondary)] text-xs">
                             <span
                                 className="w-2.5 h-2.5 rounded-full shrink-0"
                                 style={{ backgroundColor: langColor }}
@@ -369,18 +369,18 @@ const RepositoryCard = ({ repo, onClick, onBuild }: RepositoryCardProps) => {
                             <span>{repo.language}</span>
                         </div>
                     ) : (
-                        <span className="text-slate-400 text-xs">Plain</span>
+                        <span className="text-[var(--text-muted)] text-xs">Plain</span>
                     )}
 
                     {/* Updated Date */}
-                    <div className="flex items-center gap-1 text-[11px] text-slate-400">
+                    <div className="flex items-center gap-1 text-[11px] text-[var(--text-muted)]">
                         <Calendar className="w-3 h-3" />
                         <span>{formatDate(repo.updated_at)}</span>
                     </div>
 
                     {/* Stars (only if > 0) */}
                     {Boolean(repo.stargazers_count && repo.stargazers_count > 0) && (
-                        <div className="flex items-center gap-1 text-[11px] text-amber-600 font-medium">
+                        <div className="flex items-center gap-1 text-[11px] text-amber-400 font-medium">
                             <Star className="w-3 h-3 fill-current" />
                             <span>{repo.stargazers_count}</span>
                         </div>
@@ -388,7 +388,7 @@ const RepositoryCard = ({ repo, onClick, onBuild }: RepositoryCardProps) => {
 
                     {/* Forks (only if > 0) */}
                     {Boolean(repo.forks_count && repo.forks_count > 0) && (
-                        <div className="flex items-center gap-1 text-[11px] text-slate-500">
+                        <div className="flex items-center gap-1 text-[11px] text-[var(--text-muted)]">
                             <GitFork className="w-3 h-3" />
                             <span>{repo.forks_count}</span>
                         </div>
@@ -402,7 +402,7 @@ const RepositoryCard = ({ repo, onClick, onBuild }: RepositoryCardProps) => {
                         e.stopPropagation();
                         onBuild();
                     }}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer shrink-0 shadow-xs bg-blue-600 hover:bg-blue-700 active:scale-95 text-white shadow-blue-500/20"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer shrink-0 shadow-none bg-[var(--primary)] hover:bg-blue-700 active:scale-95 text-white"
                 >
                     <FiPlay className="w-3 h-3 fill-current" />
                     <span>Select & Build</span>
@@ -428,34 +428,34 @@ interface RepositoryDetailsProps {
 const RepositoryDetails = ({ repo, onClose, onBuild }: RepositoryDetailsProps) => {
     return (
         <div
-            className="fixed inset-0 z-[120] bg-black/40 backdrop-blur-xs
+            className="fixed inset-0 z-[120] bg-black/70 backdrop-blur-xs
             flex items-center justify-center p-4"
             onClick={onClose}
         >
 
             <div
-                className="bg-white w-full max-w-lg max-h-[85vh]
-                overflow-y-auto rounded-2xl shadow-2xl border border-slate-200"
+                className="bg-[var(--surface)] w-full max-w-lg max-h-[85vh]
+                overflow-y-auto rounded-2xl shadow-2xl border border-[var(--border)] text-[var(--text-primary)]"
                 onClick={(e) => e.stopPropagation()}
             >
 
-                <div className="p-5 border-b border-slate-200 sticky top-0 bg-white z-10">
+                <div className="p-5 border-b border-[var(--border)] sticky top-0 bg-[var(--surface)] z-10">
 
                     <div className="flex justify-between items-start">
 
                         <div className="flex gap-3">
 
-                            <div className="w-10 h-10 rounded-xl bg-blue-50
-                            flex items-center justify-center border border-blue-100 text-blue-600">
+                            <div className="w-10 h-10 rounded-xl bg-blue-500/10
+                            flex items-center justify-center border border-blue-500/20 text-blue-400">
                                 <FiGithub className="w-5 h-5" />
                             </div>
 
                             <div>
-                                <h2 className="text-base font-semibold text-slate-900">
+                                <h2 className="text-base font-semibold text-[var(--text-primary)]">
                                     {repo.name}
                                 </h2>
 
-                                <p className="text-xs text-slate-500 mt-0.5">
+                                <p className="text-xs text-[var(--text-muted)] mt-0.5">
                                     {repo.full_name}
                                 </p>
                             </div>
@@ -464,8 +464,8 @@ const RepositoryDetails = ({ repo, onClose, onBuild }: RepositoryDetailsProps) =
 
                         <button
                             onClick={onClose}
-                            className="w-8 h-8 rounded-lg hover:bg-slate-100 border border-slate-200
-                            flex items-center justify-center text-slate-500 hover:text-slate-700 cursor-pointer"
+                            className="w-8 h-8 rounded-lg hover:bg-[var(--surface-secondary)] border border-[var(--border)]
+                            flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer"
                         >
                             <X className="w-4 h-4" />
                         </button>
@@ -478,8 +478,8 @@ const RepositoryDetails = ({ repo, onClose, onBuild }: RepositoryDetailsProps) =
 
                     {repo.description && (
                         <div>
-                            <h4 className="text-[11px] font-medium uppercase tracking-wider text-slate-400 mb-1">Description</h4>
-                            <p className="text-xs text-slate-700 bg-slate-50 p-3 rounded-lg border border-slate-100">
+                            <h4 className="text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)] mb-1">Description</h4>
+                            <p className="text-xs text-[var(--text-secondary)] bg-[var(--surface-secondary)] p-3 rounded-lg border border-[var(--border)]">
                                 {repo.description}
                             </p>
                         </div>
@@ -487,7 +487,7 @@ const RepositoryDetails = ({ repo, onClose, onBuild }: RepositoryDetailsProps) =
 
                     {/* Details Grid */}
                     <div>
-                        <h4 className="text-[11px] font-medium uppercase tracking-wider text-slate-400 mb-2">Properties</h4>
+                        <h4 className="text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)] mb-2">Properties</h4>
                         <div className="grid grid-cols-2 gap-2.5">
 
                             <Detail label="Repository ID" value={repo.id} />
@@ -555,7 +555,7 @@ const RepositoryDetails = ({ repo, onClose, onBuild }: RepositoryDetailsProps) =
 
                         <button
                             onClick={onBuild}
-                            className="w-full h-10 rounded-xl font-semibold text-xs flex items-center justify-center gap-2 transition cursor-pointer shadow-md bg-blue-600 hover:bg-blue-700 text-white shadow-blue-500/20 active:scale-[0.99]"
+                            className="w-full h-10 rounded-xl font-semibold text-xs flex items-center justify-center gap-2 transition cursor-pointer shadow-none bg-[var(--primary)] hover:bg-blue-700 text-white active:scale-[0.99]"
                         >
                             <FiPlay className="w-3.5 h-3.5 fill-current" />
                             <span>Select & Build Image</span>
@@ -567,11 +567,11 @@ const RepositoryDetails = ({ repo, onClose, onBuild }: RepositoryDetailsProps) =
                                     href={repo.html_url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex-1 h-9 rounded-lg border border-slate-200 bg-white
-                                    text-slate-700 flex items-center justify-center
-                                    gap-1.5 text-xs font-medium hover:bg-slate-50 transition"
+                                    className="flex-1 h-9 rounded-lg border border-[var(--border)] bg-[var(--surface-secondary)]
+                                    text-[var(--text-secondary)] flex items-center justify-center
+                                    gap-1.5 text-xs font-medium hover:bg-[var(--surface)] hover:text-[var(--text-primary)] transition"
                                 >
-                                    <FiGithub className="w-3.5 h-3.5 text-slate-600" />
+                                    <FiGithub className="w-3.5 h-3.5 text-[var(--text-muted)]" />
                                     Open on GitHub
                                 </a>
                             )}
@@ -582,9 +582,9 @@ const RepositoryDetails = ({ repo, onClose, onBuild }: RepositoryDetailsProps) =
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="flex-1 h-9 rounded-lg border
-                                    border-slate-200 flex items-center
+                                    border-[var(--border)] bg-[var(--surface-secondary)] flex items-center
                                     justify-center gap-1.5 text-xs font-medium
-                                    hover:bg-slate-50 text-slate-700 transition"
+                                    hover:bg-[var(--surface)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition"
                                 >
                                     <Globe className="w-3.5 h-3.5" />
                                     Website
@@ -614,9 +614,9 @@ interface StatCardProps {
 }
 
 const StatCard = ({ label, value, icon }: StatCardProps) => (
-    <div className="bg-slate-50/80 border border-slate-200 rounded-xl p-3">
+    <div className="bg-[var(--surface)] border border-[var(--border)] rounded-xl p-3">
 
-        <div className="flex items-center gap-1.5 text-slate-500">
+        <div className="flex items-center gap-1.5 text-[var(--text-muted)]">
 
             {icon}
 
@@ -626,7 +626,7 @@ const StatCard = ({ label, value, icon }: StatCardProps) => (
 
         </div>
 
-        <div className="text-base font-semibold text-slate-900 mt-1">
+        <div className="text-base font-semibold text-[var(--text-primary)] mt-1">
             {value}
         </div>
 
@@ -640,13 +640,13 @@ interface DetailProps {
 }
 
 const Detail = ({ label, value }: DetailProps) => (
-    <div className="bg-slate-50 border border-slate-100 rounded-lg p-2.5">
+    <div className="bg-[var(--surface-secondary)] border border-[var(--border)] rounded-lg p-2.5">
 
-        <p className="text-[10px] font-medium uppercase tracking-wider text-slate-400">
+        <p className="text-[10px] font-medium uppercase tracking-wider text-[var(--text-muted)]">
             {label}
         </p>
 
-        <p className="text-xs font-semibold text-slate-800 mt-0.5 break-all">
+        <p className="text-xs font-semibold text-[var(--text-primary)] mt-0.5 break-all">
             {value}
         </p>
 

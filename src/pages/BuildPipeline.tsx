@@ -338,31 +338,31 @@ const BuildPipeline = () => {
   };
 
   return (
-    <main className="build-pipeline min-h-screen bg-[#f8fafc] text-slate-900 flex flex-col">
+    <main className="build-pipeline min-h-screen bg-[var(--background)] text-[var(--text-primary)] flex flex-col">
 
       {/* Top Navigation Header */}
-      <header className="h-16 bg-white border-b border-slate-200 px-4 sm:px-8 flex items-center justify-between sticky top-0 z-30 shadow-xs">
+      <header className="h-16 bg-[var(--surface)] border-b border-[var(--border)] px-4 sm:px-8 flex items-center justify-between sticky top-0 z-30 shadow-xs">
         <div className="flex items-center gap-3 sm:gap-6">
           <Link
             to={location.state?.projectId ? `/projects/${location.state.projectId}` : "/dashboard"}
-            className="flex items-center gap-2 text-slate-500 hover:text-slate-900 transition text-xs font-semibold"
+            className="flex items-center gap-2 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition text-xs font-semibold"
           >
             <FiArrowLeft className="w-4 h-4" />
             <span className="hidden sm:inline">Back to {location.state?.projectId ? "Project" : "Dashboard"}</span>
           </Link>
 
-          <div className="h-4 w-px bg-slate-200 hidden sm:block" />
+          <div className="h-4 w-px bg-[var(--border)] hidden sm:block" />
 
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-xs">
+            <div className="w-8 h-8 rounded-xl bg-[var(--primary)] flex items-center justify-center text-white shadow-xs">
               <FiCloud className="w-4 h-4" />
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <span className="font-bold text-sm text-slate-900 truncate">
+                <span className="font-bold text-sm text-[var(--text-primary)] truncate">
                   {repo.name}
                 </span>
-                <span className="text-[10px] font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md font-mono">
+                <span className="text-[10px] font-semibold text-[var(--text-secondary)] bg-[var(--surface-secondary)] border border-[var(--border)] px-2 py-0.5 rounded-md font-mono">
                   {branch}
                 </span>
               </div>
@@ -373,35 +373,35 @@ const BuildPipeline = () => {
         {/* Phase Status Badge */}
         <div className="flex items-center gap-3">
           {phase === "config" && (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold border border-slate-200">
-              <FiKey className="w-3 h-3 text-slate-500" />
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--surface-secondary)] text-[var(--text-secondary)] text-xs font-semibold border border-[var(--border)]">
+              <FiKey className="w-3 h-3 text-[var(--text-muted)]" />
               1. Repository Selected
             </span>
           )}
 
           {phase === "building" && (
-            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold border border-blue-200 animate-pulse">
-              <span className="w-2 h-2 rounded-full bg-blue-600 animate-ping" />
+            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs font-semibold border border-blue-500/20 animate-pulse">
+              <span className="w-2 h-2 rounded-full bg-blue-500 animate-ping" />
               Building Docker Image…
             </span>
           )}
 
           {phase === "image-built" && (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-200 shadow-xs">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-semibold border border-emerald-500/20 shadow-xs">
               <FiBox className="w-3.5 h-3.5" />
               Image Ready • Awaiting Deploy
             </span>
           )}
 
           {phase === "deploying" && (
-            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-semibold border border-indigo-200 animate-pulse">
-              <span className="w-2 h-2 rounded-full bg-indigo-600 animate-ping" />
+            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-400 text-xs font-semibold border border-indigo-500/20 animate-pulse">
+              <span className="w-2 h-2 rounded-full bg-indigo-500 animate-ping" />
               Deploying Image to Cluster…
             </span>
           )}
 
           {phase === "live" && (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-200 shadow-xs">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-semibold border border-emerald-500/20 shadow-xs">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               Production Live
             </span>
@@ -413,115 +413,115 @@ const BuildPipeline = () => {
       <div className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col gap-6">
 
         {/* Visual Pipeline Progress Stepper */}
-        <section className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-5 shadow-xs">
+        <section className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-4 sm:p-5 shadow-xs">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
 
             {/* Step 1: Environment & Config */}
             <div className={`p-3.5 rounded-xl border transition ${phase === "config"
-              ? "bg-blue-50/70 border-blue-200 text-blue-900"
-              : "bg-slate-50/80 border-slate-200 text-slate-700"
+              ? "bg-blue-500/10 border-blue-500/30 text-blue-300"
+              : "bg-[var(--surface-secondary)] border-[var(--border)] text-[var(--text-secondary)]"
               }`}>
               <div className="flex items-center justify-between mb-1.5">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Step 1</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Step 1</span>
                 {phase !== "config" ? (
-                  <FiCheckCircle className="w-4 h-4 text-emerald-600" />
+                  <FiCheckCircle className="w-4 h-4 text-emerald-400" />
                 ) : (
-                  <FiKey className="w-4 h-4 text-blue-600" />
+                  <FiKey className="w-4 h-4 text-blue-400" />
                 )}
               </div>
-              <h4 className="text-xs font-bold text-slate-900">Repository Selected</h4>
-              <p className="text-[11px] text-slate-500 mt-0.5">Automatic build detection</p>
+              <h4 className="text-xs font-bold text-[var(--text-primary)]">Repository Selected</h4>
+              <p className="text-[11px] text-[var(--text-muted)] mt-0.5">Automatic build detection</p>
             </div>
 
             {/* Step 2: Build Image */}
             <div className={`p-3.5 rounded-xl border transition ${phase === "building"
-              ? "bg-blue-50/70 border-blue-200 text-blue-900"
+              ? "bg-blue-500/10 border-blue-500/30 text-blue-300"
               : phase === "image-built" || phase === "deploying" || phase === "live"
-                ? "bg-slate-50/80 border-slate-200 text-slate-700"
-                : "bg-white border-slate-200/60 opacity-60 text-slate-400"
+                ? "bg-[var(--surface-secondary)] border-[var(--border)] text-[var(--text-secondary)]"
+                : "bg-[var(--surface)] border-[var(--border)]/60 opacity-60 text-[var(--text-muted)]"
               }`}>
               <div className="flex items-center justify-between mb-1.5">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Step 2</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Step 2</span>
                 {phase === "building" ? (
-                  <span className="w-3.5 h-3.5 border-2 border-blue-600/30 border-t-blue-600 rounded-full animate-spin" />
+                  <span className="w-3.5 h-3.5 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
                 ) : phase === "image-built" || phase === "deploying" || phase === "live" ? (
-                  <FiCheckCircle className="w-4 h-4 text-emerald-600" />
+                  <FiCheckCircle className="w-4 h-4 text-emerald-400" />
                 ) : (
-                  <FiBox className="w-4 h-4 text-slate-400" />
+                  <FiBox className="w-4 h-4 text-[var(--text-muted)]" />
                 )}
               </div>
-              <h4 className="text-xs font-bold text-slate-900">Build Image</h4>
-              <p className="text-[11px] text-slate-500 mt-0.5">Docker Container Build</p>
+              <h4 className="text-xs font-bold text-[var(--text-primary)]">Build Image</h4>
+              <p className="text-[11px] text-[var(--text-muted)] mt-0.5">Docker Container Build</p>
             </div>
 
             {/* Step 3: Verified Image Artifact */}
             <div className={`p-3.5 rounded-xl border transition ${phase === "image-built"
-              ? "bg-emerald-50/70 border-emerald-300 text-emerald-900 ring-2 ring-emerald-500/20"
+              ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-300 ring-1 ring-emerald-500/20"
               : phase === "deploying" || phase === "live"
-                ? "bg-slate-50/80 border-slate-200 text-slate-700"
-                : "bg-white border-slate-200/60 opacity-60 text-slate-400"
+                ? "bg-[var(--surface-secondary)] border-[var(--border)] text-[var(--text-secondary)]"
+                : "bg-[var(--surface)] border-[var(--border)]/60 opacity-60 text-[var(--text-muted)]"
               }`}>
               <div className="flex items-center justify-between mb-1.5">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Step 3</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Step 3</span>
                 {phase === "image-built" ? (
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                 ) : phase === "deploying" || phase === "live" ? (
-                  <FiCheckCircle className="w-4 h-4 text-emerald-600" />
+                  <FiCheckCircle className="w-4 h-4 text-emerald-400" />
                 ) : (
-                  <FiLayers className="w-4 h-4 text-slate-400" />
+                  <FiLayers className="w-4 h-4 text-[var(--text-muted)]" />
                 )}
               </div>
-              <h4 className="text-xs font-bold text-slate-900">Image Ready & ENV</h4>
-              <p className="text-[11px] text-slate-500 mt-0.5">{phase === "config" || phase === "building" ? "Pending Build" : `ID: ${shortImageId}`}</p>
+              <h4 className="text-xs font-bold text-[var(--text-primary)]">Image Ready & ENV</h4>
+              <p className="text-[11px] text-[var(--text-muted)] mt-0.5">{phase === "config" || phase === "building" ? "Pending Build" : `ID: ${shortImageId}`}</p>
             </div>
 
             {/* Step 4: Deploy Image */}
             <div className={`p-3.5 rounded-xl border transition ${phase === "deploying"
-              ? "bg-indigo-50/70 border-indigo-200 text-indigo-900"
+              ? "bg-indigo-500/10 border-indigo-500/30 text-indigo-300"
               : phase === "live"
-                ? "bg-emerald-50/80 border-emerald-200 text-emerald-900"
-                : "bg-white border-slate-200/60 opacity-60 text-slate-400"
+                ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-300"
+                : "bg-[var(--surface)] border-[var(--border)]/60 opacity-60 text-[var(--text-muted)]"
               }`}>
               <div className="flex items-center justify-between mb-1.5">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Step 4</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Step 4</span>
                 {phase === "deploying" ? (
-                  <span className="w-3.5 h-3.5 border-2 border-indigo-600/30 border-t-indigo-600 rounded-full animate-spin" />
+                  <span className="w-3.5 h-3.5 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
                 ) : phase === "live" ? (
-                  <FiCheckCircle className="w-4 h-4 text-emerald-600" />
+                  <FiCheckCircle className="w-4 h-4 text-emerald-400" />
                 ) : (
-                  <FiGlobe className="w-4 h-4 text-slate-400" />
+                  <FiGlobe className="w-4 h-4 text-[var(--text-muted)]" />
                 )}
               </div>
-              <h4 className="text-xs font-bold text-slate-900">Deploy Image</h4>
-              <p className="text-[11px] text-slate-500 mt-0.5">Cluster Rollout & SSL</p>
+              <h4 className="text-xs font-bold text-[var(--text-primary)]">Deploy Image</h4>
+              <p className="text-[11px] text-[var(--text-muted)] mt-0.5">Cluster Rollout & SSL</p>
             </div>
 
           </div>
         </section>
 
-        {buildError && <div role="alert" className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-sm text-rose-700">{buildError}</div>}
+        {buildError && <div role="alert" className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-sm text-rose-400">{buildError}</div>}
         {phase === "building" && (
           <BuildProgress status={getBuildStatus(build?.status)} repository={repo.full_name || repo.name} branch={branch} elapsed={elapsed} warning={pollError} />
         )}
         {/* Build the selected repository with automatic detection */}
         {phase === "config" && (
-          <section className="bg-white border border-slate-200/90 rounded-2xl p-5 sm:p-6 shadow-xs">
+          <section className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5 sm:p-6 shadow-xs">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
               <div className="flex items-start gap-3 min-w-0">
-                <div className="w-11 h-11 rounded-xl bg-blue-50 border border-blue-100 text-blue-600 flex items-center justify-center shrink-0">
+                <div className="w-11 h-11 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center shrink-0">
                   <FiBox className="w-5 h-5" />
                 </div>
                 <div className="min-w-0">
-                  <h2 className="text-sm font-bold text-slate-900 break-all">{repo.full_name || repo.name}</h2>
-                  <p className="text-xs text-slate-500 mt-1">Branch: {branch}</p>
-                  <p className="text-xs text-slate-500 mt-2">
+                  <h2 className="text-sm font-bold text-[var(--text-primary)] break-all">{repo.full_name || repo.name}</h2>
+                  <p className="text-xs text-[var(--text-secondary)] mt-1">Branch: {branch}</p>
+                  <p className="text-xs text-[var(--text-muted)] mt-2">
                     Language and build settings are detected automatically.
                   </p>
                 </div>
               </div>
               <button
                 onClick={handleBuildImage}
-                className="h-11 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-500/25 transition cursor-pointer flex items-center justify-center gap-2 shrink-0"
+                className="h-11 px-6 rounded-xl bg-[var(--primary)] hover:bg-blue-700 text-white font-bold text-xs shadow-none transition cursor-pointer flex items-center justify-center gap-2 shrink-0"
               >
                 <FiBox className="w-4 h-4" />
                 <span>Build Image</span>
@@ -532,22 +532,22 @@ const BuildPipeline = () => {
 
         {/* PHASE 3: Image Built Artifact Screen (Show Image ID + 'Deploy Image' button) */}
         {phase === "image-built" && (
-          <section ref={imageReadyRef} tabIndex={-1} className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm animate-fadeIn focus:outline-none">
+          <section ref={imageReadyRef} tabIndex={-1} className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6 shadow-sm animate-fadeIn focus:outline-none">
 
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-slate-100">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-[var(--border)]">
               <div className="flex items-center gap-3.5">
-                <div className="w-11 h-11 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 shadow-xs">
+                <div className="w-11 h-11 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 shadow-xs">
                   <FiBox className="w-5 h-5" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full uppercase tracking-wider">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                       Image Built Successfully
                     </span>
-                    <span className="text-xs text-slate-400">Ready for Cluster Deployment</span>
+                    <span className="text-xs text-[var(--text-muted)]">Ready for Cluster Deployment</span>
                   </div>
-                  <h3 className="text-base font-bold text-slate-900 mt-1">
+                  <h3 className="text-base font-bold text-[var(--text-primary)] mt-1">
                     Docker Container Image Artifact
                   </h3>
                 </div>
@@ -560,37 +560,37 @@ const BuildPipeline = () => {
 
             <div className="mt-6 space-y-4">
               {/* Environment Variables Card */}
-              <article className="bg-white border border-slate-200/90 rounded-2xl p-5 sm:p-6 shadow-xs">
-                {projectId && envLoading ? <p role="status" className="text-sm text-slate-500 py-4">Checking this project's environment variables...</p>
-                  : projectId && envLoadError ? <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">Could not load project environment variables. <button type="button" onClick={() => refetchEnv()} className="font-semibold underline cursor-pointer">Retry</button></div>
+              <article className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5 sm:p-6 shadow-xs">
+                {projectId && envLoading ? <p role="status" className="text-sm text-[var(--text-muted)] py-4">Checking this project's environment variables...</p>
+                  : projectId && envLoadError ? <div role="alert" className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-400">Could not load project environment variables. <button type="button" onClick={() => refetchEnv()} className="font-semibold underline cursor-pointer">Retry</button></div>
                     : hasProjectEnv ? <>
-                      <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-4"><div><h3 className="flex items-center gap-2 text-sm font-bold text-slate-900"><FiKey className="w-4 h-4 text-blue-600" /> Environment configured</h3><p className="text-xs text-slate-500 mt-1">{projectEnv.length} variables are saved for this project. The image is ready for deployment.</p></div><span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-700">Ready to deploy</span></div>
-                      <div className="mt-4 flex items-center justify-between gap-3"><h4 className="text-xs font-semibold text-slate-700">Saved variables</h4><button type="button" onClick={() => setShowStoredEnv(value => !value)} aria-pressed={showStoredEnv} className="text-xs font-semibold text-blue-600 hover:underline cursor-pointer">{showStoredEnv ? "Hide values" : "Show values"}</button></div>
-                      <dl className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">{projectEnv.map(variable => <div key={variable.key} className="min-w-0 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2"><dt className="text-xs font-mono font-semibold text-slate-700 break-all">{variable.key}</dt><dd className="mt-1 text-xs font-mono text-slate-500 break-all">{showStoredEnv ? variable.value : "••••••••"}</dd></div>)}</dl>
+                      <div className="flex flex-wrap items-start justify-between gap-3 border-b border-[var(--border)] pb-4"><div><h3 className="flex items-center gap-2 text-sm font-bold text-[var(--text-primary)]"><FiKey className="w-4 h-4 text-blue-400" /> Environment configured</h3><p className="text-xs text-[var(--text-muted)] mt-1">{projectEnv.length} variables are saved for this project. The image is ready for deployment.</p></div><span className="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-semibold text-emerald-400">Ready to deploy</span></div>
+                      <div className="mt-4 flex items-center justify-between gap-3"><h4 className="text-xs font-semibold text-[var(--text-secondary)]">Saved variables</h4><button type="button" onClick={() => setShowStoredEnv(value => !value)} aria-pressed={showStoredEnv} className="text-xs font-semibold text-[var(--primary)] hover:underline cursor-pointer">{showStoredEnv ? "Hide values" : "Show values"}</button></div>
+                      <dl className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">{projectEnv.map(variable => <div key={variable.key} className="min-w-0 rounded-lg border border-[var(--border)] bg-[var(--surface-secondary)] px-3 py-2"><dt className="text-xs font-mono font-semibold text-[var(--text-primary)] break-all">{variable.key}</dt><dd className="mt-1 text-xs font-mono text-[var(--text-secondary)] break-all">{showStoredEnv ? variable.value : "••••••••"}</dd></div>)}</dl>
                     </> : <>
-                <div className="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
+                <div className="flex justify-between items-center mb-4 pb-3 border-b border-[var(--border)]">
                   <div>
-                    <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                      <FiKey className="w-4 h-4 text-blue-600" />
+                    <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
+                      <FiKey className="w-4 h-4 text-blue-400" />
                       Deployment Environment Variables (ENV)
                     </h3>
-                    <p className="text-xs text-slate-500 mt-0.5">
+                    <p className="text-xs text-[var(--text-muted)] mt-0.5">
                       Your image is ready. Add runtime variables for your application, then deploy the image.
                     </p>
                   </div>
 
                   <button
                     onClick={addEnvVar}
-                    className="flex items-center gap-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200/70 px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer"
+                    className="flex items-center gap-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer"
                   >
                     <FiPlus className="w-3.5 h-3.5" />
                     <span>Add Variable</span>
                   </button>
                 </div>
 
-                <div className="mb-5 rounded-xl border border-blue-100 bg-blue-50/50 p-4">
-                  <label htmlFor="bulk-env" className="block text-sm font-bold text-slate-900">Paste multiple variables</label>
-                  <p className="mt-1 mb-3 text-xs text-slate-500">Paste your .env contents, one KEY=value per line. Matching names will be updated; imported values are hidden in the review below.</p>
+                <div className="mb-5 rounded-xl border border-[var(--border)] bg-[var(--surface-secondary)]/50 p-4">
+                  <label htmlFor="bulk-env" className="block text-sm font-bold text-[var(--text-primary)]">Paste multiple variables</label>
+                  <p className="mt-1 mb-3 text-xs text-[var(--text-muted)]">Paste your .env contents, one KEY=value per line. Matching names will be updated; imported values are hidden in the review below.</p>
                   <textarea
                     id="bulk-env"
                     value={bulkEnv}
@@ -599,29 +599,29 @@ const BuildPipeline = () => {
                     spellCheck={false}
                     autoComplete="off"
                     rows={5}
-                    className="w-full resize-y rounded-xl border border-slate-200 bg-white p-3 text-xs font-mono leading-6 text-slate-800 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                    className="w-full resize-y rounded-xl border border-[var(--border)] bg-[var(--surface-secondary)] p-3 text-xs font-mono leading-6 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)]"
                   />
                   <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-                    <span className="text-[11px] text-slate-500">Supports comments, quoted values, and export KEY=value.</span>
-                    <button type="button" onClick={importEnv} disabled={!bulkEnv.trim()} className="rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed">Import variables</button>
+                    <span className="text-[11px] text-[var(--text-muted)]">Supports comments, quoted values, and export KEY=value.</span>
+                    <button type="button" onClick={importEnv} disabled={!bulkEnv.trim()} className="rounded-lg bg-[var(--primary)] px-4 py-2 text-xs font-semibold text-white hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed">Import variables</button>
                   </div>
                 </div>
-                {envError && <p role="alert" className="mb-4 rounded-lg bg-rose-50 p-3 text-xs text-rose-700">{envError}</p>}
-                {envNotice && <p role="status" className="mb-4 rounded-lg bg-emerald-50 p-3 text-xs text-emerald-700">{envNotice}</p>}
-                <h4 className="mb-3 text-xs font-bold text-slate-700">Review variables ({envVars.length})</h4>
+                {envError && <p role="alert" className="mb-4 rounded-lg bg-rose-500/10 p-3 text-xs text-rose-400">{envError}</p>}
+                {envNotice && <p role="status" className="mb-4 rounded-lg bg-emerald-500/10 p-3 text-xs text-emerald-400">{envNotice}</p>}
+                <h4 className="mb-3 text-xs font-bold text-[var(--text-primary)]">Review variables ({envVars.length})</h4>
                 {/* Env Vars Input List */}
                 <div className="space-y-3">
                   {envVars.map((env) => (
                     <div
                       key={env.id}
-                      className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 bg-slate-50/80 p-2.5 rounded-xl border border-slate-200/70"
+                      className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 bg-[var(--surface-secondary)]/50 p-2.5 rounded-xl border border-[var(--border)]"
                     >
                       <input
                         type="text"
                         placeholder="KEY (e.g. PORT)"
                         value={env.key}
                         onChange={(e) => updateEnvVar(env.id, "key", e.target.value)}
-                        className="w-full sm:w-1/3 h-9 px-3 rounded-lg border border-slate-200 bg-white text-xs font-mono font-semibold text-slate-900 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-100"
+                        className="w-full sm:w-1/3 h-9 px-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-xs font-mono font-semibold text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)]"
                       />
 
                       <div className="relative flex-1">
@@ -630,14 +630,14 @@ const BuildPipeline = () => {
                           placeholder="VALUE"
                           value={env.value}
                           onChange={(e) => updateEnvVar(env.id, "value", e.target.value)}
-                          className="w-full h-9 pl-3 pr-8 rounded-lg border border-slate-200 bg-white text-xs font-mono text-slate-800 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-100"
+                          className="w-full h-9 pl-3 pr-8 rounded-lg border border-[var(--border)] bg-[var(--surface)] text-xs font-mono text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)]"
                         />
 
                         {env.isSecret && (
                           <button
                             type="button"
                             onClick={() => toggleShowSecret(env.id)}
-                            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
                           >
                             {showSecretMap[env.id] ? <FiEyeOff className="w-3.5 h-3.5" /> : <FiEye className="w-3.5 h-3.5" />}
                           </button>
@@ -649,8 +649,8 @@ const BuildPipeline = () => {
                           type="button"
                           onClick={() => updateEnvVar(env.id, "isSecret", !env.isSecret)}
                           className={`text-[10px] font-medium px-2 py-1.5 rounded-md border transition cursor-pointer ${env.isSecret
-                            ? "bg-amber-50 text-amber-700 border-amber-200"
-                            : "bg-white text-slate-500 border-slate-200"
+                            ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                            : "bg-[var(--surface-secondary)] text-[var(--text-muted)] border-[var(--border)]"
                             }`}
                         >
                           {env.isSecret ? "Secret" : "Plain"}
@@ -659,7 +659,7 @@ const BuildPipeline = () => {
                         <button
                           type="button"
                           onClick={() => removeEnvVar(env.id)}
-                          className="w-8 h-8 rounded-lg hover:bg-rose-50 text-slate-400 hover:text-rose-600 flex items-center justify-center transition cursor-pointer"
+                          className="w-8 h-8 rounded-lg hover:bg-rose-500/10 text-[var(--text-muted)] hover:text-rose-400 flex items-center justify-center transition cursor-pointer"
                         >
                           <FiTrash2 className="w-3.5 h-3.5" />
                         </button>
@@ -668,11 +668,11 @@ const BuildPipeline = () => {
                   ))}
                 </div>
 
-                <div className="mt-4 pt-3 border-t border-slate-100 flex items-center gap-2 text-[11px] text-slate-400">
-                  <FiKey className="w-3.5 h-3.5 text-slate-400" />
+                <div className="mt-4 pt-3 border-t border-[var(--border)] flex items-center gap-2 text-[11px] text-[var(--text-muted)]">
+                  <FiKey className="w-3.5 h-3.5 text-[var(--text-muted)]" />
                   <span>These variables are used when the container starts.</span>
                 </div>
-                {hasImportedEnv && <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-blue-100 bg-blue-50/50 p-4"><div><p className="text-xs font-semibold text-slate-800">{envSaved ? "Variables saved" : "Save your imported variables"}</p><p className="text-[11px] text-slate-500 mt-1">{!location.state?.projectId ? "Open the build from a project to save variables." : envSaved ? "Changes will need to be saved again." : "Save these values to this project before deploying."}</p></div><button type="button" onClick={saveEnv} disabled={envSaved || envSaving || !location.state?.projectId} className="rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">{envSaving ? "Saving..." : envSaved ? "Saved" : "Save environment variables"}</button></div>}
+                {hasImportedEnv && <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-blue-500/20 bg-blue-500/10 p-4"><div><p className="text-xs font-semibold text-[var(--text-primary)]">{envSaved ? "Variables saved" : "Save your imported variables"}</p><p className="text-[11px] text-[var(--text-muted)] mt-1">{!location.state?.projectId ? "Open the build from a project to save variables." : envSaved ? "Changes will need to be saved again." : "Save these values to this project before deploying."}</p></div><button type="button" onClick={saveEnv} disabled={envSaved || envSaving || !location.state?.projectId} className="rounded-lg bg-[var(--primary)] px-4 py-2 text-xs font-semibold text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">{envSaving ? "Saving..." : envSaved ? "Saved" : "Save environment variables"}</button></div>}
                     </>}
               </article>
 
@@ -682,7 +682,7 @@ const BuildPipeline = () => {
                 <button
                   onClick={handleDeployImage}
                   disabled={envSaving || Boolean(projectId && (envLoading || envLoadError)) || (hasImportedEnv && !envSaved)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-6 py-2.5 rounded-xl shadow-md shadow-blue-500/20 transition cursor-pointer flex items-center justify-center gap-2 active:scale-98 shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="bg-[var(--primary)] hover:bg-blue-700 text-white font-bold text-xs px-6 py-2.5 rounded-xl shadow-none transition cursor-pointer flex items-center justify-center gap-2 active:scale-98 shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <FiPlay className="w-4 h-4 fill-current" />
                   <span>Deploy Application</span>
@@ -697,22 +697,22 @@ const BuildPipeline = () => {
           <section className="space-y-6 animate-fadeIn">
 
             {/* Top Deployment Header Card */}
-            <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-sm">
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-slate-100">
+            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6 shadow-sm">
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-[var(--border)]">
 
                 {/* Left: Project & Domain Info */}
                 <div className="space-y-2">
                   <div className="flex items-center gap-2.5 flex-wrap">
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-semibold shadow-xs">
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-semibold shadow-xs">
                       <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                       Production Ready
                     </span>
 
-                    <span className="font-mono text-xs text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200">
+                    <span className="font-mono text-xs text-[var(--text-secondary)] bg-[var(--surface-secondary)] px-2 py-0.5 rounded-md border border-[var(--border)]">
                       {deploymentId}
                     </span>
 
-                    <span className="text-xs text-slate-400">
+                    <span className="text-xs text-[var(--text-muted)]">
                       • Deployed 14 seconds ago
                     </span>
                   </div>
@@ -723,15 +723,15 @@ const BuildPipeline = () => {
                       href={liveUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-xl sm:text-2xl font-bold text-slate-900 hover:text-blue-600 transition flex items-center gap-2 group tracking-tight"
+                      className="text-xl sm:text-2xl font-bold text-[var(--text-primary)] hover:text-[var(--primary)] transition flex items-center gap-2 group tracking-tight"
                     >
                       <span>{repo.name.toLowerCase().replace(/[^a-z0-9]/g, "-")}.deployforge.app</span>
-                      <FiExternalLink className="w-4 h-4 text-slate-400 group-hover:text-blue-600 transition" />
+                      <FiExternalLink className="w-4 h-4 text-[var(--text-muted)] group-hover:text-[var(--primary)] transition" />
                     </a>
                   </div>
 
-                  <p className="text-xs text-slate-500 flex items-center gap-2">
-                    <FiLock className="w-3.5 h-3.5 text-emerald-600" />
+                  <p className="text-xs text-[var(--text-muted)] flex items-center gap-2">
+                    <FiLock className="w-3.5 h-3.5 text-emerald-400" />
                     <span>Automatic SSL TLS 1.3 Active • Global Edge Routing (240+ PoPs)</span>
                   </p>
                 </div>
@@ -740,9 +740,9 @@ const BuildPipeline = () => {
                 <div className="flex items-center gap-3 shrink-0 flex-wrap">
                   <button
                     onClick={copyLiveUrl}
-                    className="h-10 px-4 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold transition cursor-pointer flex items-center gap-2 shadow-2xs"
+                    className="h-10 px-4 rounded-xl bg-[var(--surface-secondary)] hover:bg-[var(--surface-secondary)]/80 border border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-xs font-semibold transition cursor-pointer flex items-center gap-2"
                   >
-                    {copiedUrl ? <FiCheck className="w-4 h-4 text-emerald-600" /> : <FiCopy className="w-4 h-4 text-slate-500" />}
+                    {copiedUrl ? <FiCheck className="w-4 h-4 text-emerald-400" /> : <FiCopy className="w-4 h-4 text-[var(--text-muted)]" />}
                     <span>{copiedUrl ? "Copied URL" : "Copy URL"}</span>
                   </button>
 
@@ -750,7 +750,7 @@ const BuildPipeline = () => {
                     href={liveUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="h-10 px-5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition shadow-md shadow-blue-500/20 flex items-center gap-2 cursor-pointer active:scale-98"
+                    className="h-10 px-5 rounded-xl bg-[var(--primary)] hover:bg-blue-700 text-white text-xs font-semibold transition shadow-none flex items-center gap-2 cursor-pointer active:scale-98"
                   >
                     <span>Visit Live Application</span>
                     <FiExternalLink className="w-4 h-4" />
@@ -762,31 +762,31 @@ const BuildPipeline = () => {
               {/* Production Metadata Summary Bar */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-5 text-xs">
                 <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">Cluster Instance</span>
-                  <p className="font-semibold text-slate-800 flex items-center gap-1.5">
-                    <FiServer className="w-3.5 h-3.5f text-blue-600" />
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] block mb-0.5">Cluster Instance</span>
+                  <p className="font-semibold text-[var(--text-primary)] flex items-center gap-1.5">
+                    <FiServer className="w-3.5 h-3.5 text-blue-400" />
                     AWS us-east-1 (1 Pod)
                   </p>
                 </div>
 
                 <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">Container Image</span>
-                  <p className="font-mono text-xs font-bold text-slate-800 truncate" title={imageId}>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] block mb-0.5">Container Image</span>
+                  <p className="font-mono text-xs font-bold text-[var(--text-primary)] truncate" title={imageId}>
                     {build?.image.reference}
                   </p>
                 </div>
 
                 <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">Source Git Branch</span>
-                  <p className="font-semibold text-slate-800 font-mono">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] block mb-0.5">Source Git Branch</span>
+                  <p className="font-semibold text-[var(--text-primary)] font-mono">
                     main · commit 8f4e2b1
                   </p>
                 </div>
 
                 <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">Health Probe</span>
-                  <p className="font-semibold text-emerald-700 flex items-center gap-1">
-                    <FiCheckCircle className="w-3.5 h-3.5 text-emerald-600" />
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] block mb-0.5">Health Probe</span>
+                  <p className="font-semibold text-emerald-400 flex items-center gap-1">
+                    <FiCheckCircle className="w-3.5 h-3.5 text-emerald-400" />
                     200 OK (14ms latency)
                   </p>
                 </div>
@@ -794,10 +794,10 @@ const BuildPipeline = () => {
             </div>
 
             {/* Interactive Browser Preview Card (Vercel Style) */}
-            <div className="bg-white border border-slate-200/90 rounded-2xl overflow-hidden shadow-sm">
+            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl overflow-hidden shadow-sm">
 
               {/* Browser Window Chrome */}
-              <div className="bg-slate-100 border-b border-slate-200 px-4 py-2.5 flex items-center justify-between">
+              <div className="bg-[var(--surface-secondary)] border-b border-[var(--border)] px-4 py-2.5 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="w-3 h-3 rounded-full bg-rose-400/80 inline-block" />
                   <span className="w-3 h-3 rounded-full bg-amber-400/80 inline-block" />
@@ -805,15 +805,15 @@ const BuildPipeline = () => {
                 </div>
 
                 {/* Mock Address Bar */}
-                <div className="bg-white border border-slate-200/80 rounded-lg px-3 py-1 text-xs text-slate-600 font-mono flex items-center gap-1.5 max-w-sm w-full shadow-2xs">
-                  <FiLock className="w-3 h-3 text-emerald-600 shrink-0" />
+                <div className="bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-1 text-xs text-[var(--text-secondary)] font-mono flex items-center gap-1.5 max-w-sm w-full">
+                  <FiLock className="w-3 h-3 text-emerald-400 shrink-0" />
                   <span className="truncate">{liveUrl}</span>
                 </div>
 
-                <div className="flex items-center gap-1.5 text-slate-400">
+                <div className="flex items-center gap-1.5 text-[var(--text-muted)]">
                   <button
                     onClick={copyLiveUrl}
-                    className="hover:text-slate-600 p-1 rounded transition cursor-pointer"
+                    className="hover:text-[var(--text-primary)] p-1 rounded transition cursor-pointer"
                     title="Copy URL"
                   >
                     <FiCopy className="w-3.5 h-3.5" />
@@ -822,7 +822,7 @@ const BuildPipeline = () => {
                     href={liveUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="hover:text-slate-600 p-1 rounded transition"
+                    className="hover:text-[var(--text-primary)] p-1 rounded transition"
                     title="Open in new tab"
                   >
                     <FiExternalLink className="w-3.5 h-3.5" />
@@ -831,16 +831,16 @@ const BuildPipeline = () => {
               </div>
 
               {/* Preview Content Area */}
-              <div className="p-8 bg-gradient-to-b from-slate-50 to-white min-h-[260px] flex flex-col items-center justify-center text-center">
-                <div className="w-14 h-14 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 mb-4 shadow-sm">
+              <div className="p-8 bg-gradient-to-b from-[var(--surface-secondary)] to-[var(--surface)] min-h-[260px] flex flex-col items-center justify-center text-center">
+                <div className="w-14 h-14 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 mb-4 shadow-sm">
                   <FiGlobe className="w-7 h-7" />
                 </div>
 
-                <h4 className="text-base font-bold text-slate-900">
+                <h4 className="text-base font-bold text-[var(--text-primary)]">
                   {repo.name} is running in production
                 </h4>
 
-                <p className="text-xs text-slate-500 mt-1 max-w-md">
+                <p className="text-xs text-[var(--text-muted)] mt-1 max-w-md">
                   Serving HTTP traffic with automatic SSL encryption and edge caching across global endpoints.
                 </p>
 
@@ -849,7 +849,7 @@ const BuildPipeline = () => {
                     href={liveUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-4 py-2 rounded-xl shadow-sm transition flex items-center gap-1.5"
+                    className="bg-[var(--primary)] hover:bg-blue-700 text-white text-xs font-semibold px-4 py-2 rounded-xl shadow-sm transition flex items-center gap-1.5"
                   >
                     <span>Open Live Preview</span>
                     <FiExternalLink className="w-3.5 h-3.5" />
@@ -857,9 +857,9 @@ const BuildPipeline = () => {
 
                   <button
                     onClick={handleBuildImage}
-                    className="bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold px-4 py-2 rounded-xl transition flex items-center gap-1.5 cursor-pointer"
+                    className="bg-[var(--surface-secondary)] hover:bg-[var(--surface)] border border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-xs font-semibold px-4 py-2 rounded-xl transition flex items-center gap-1.5 cursor-pointer"
                   >
-                    <FiRotateCcw className="w-3.5 h-3.5 text-slate-500" />
+                    <FiRotateCcw className="w-3.5 h-3.5 text-[var(--text-muted)]" />
                     <span>Redeploy Container</span>
                   </button>
                 </div>

@@ -10,12 +10,15 @@ import Myprfile from './pages/Myprfile';
 import BuildPipeline from './pages/BuildPipeline';
 import Projects from './pages/Projects';
 import ProjectImageDetails from './pages/ProjectImageDetails';
+import AdminDashboard from './pages/AdminDashboard';
 
 function App() {
 
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/admin/dashbord" element={<AdminDashboard />} />
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/myDashboard" element={<Myprfile />} />
