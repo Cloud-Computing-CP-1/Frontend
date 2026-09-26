@@ -10,6 +10,7 @@ import ProjectActivity from "./Components/ProjectActivity";
 import ProjectEnvironment from "./Components/ProjectEnvironment";
 import ProjectSettings from "./Components/ProjectSettings";
 import { projectRepository } from "./project.service";
+import CloudProviderStatus from "./Components/CloudProviderStatus";
 
 const pages = {
   overview: { title: "Workspace overview", description: "Your projects, builds, and application configuration." },
@@ -38,6 +39,7 @@ export default function Myprfile() {
   return <WorkspaceLayout user={user} active={view}>
     <header className="dfw-page-header"><div><p className="dfw-eyebrow">Personal workspace</p><h1>{page.title}</h1><p>{page.description}</p></div><div className="dfw-header-actions"><button type="button" className="dfw-button dfw-icon-button" aria-label="Refresh projects" disabled={isFetching || !user} onClick={() => void refetch()}><FiRefreshCw className={isFetching ? "dfw-spin" : ""} /></button>{user && createAction}</div></header>
     {userLoading ? <LoadingCards /> : userError || !user ? <section className="dfw-panel"><EmptyState title="Your workspace could not be loaded" action={<div className="dfw-quick-actions"><button className="dfw-button" onClick={() => void refetchUser()}>Try again</button><Link className="dfw-button dfw-primary" to="/login">Login</Link></div>}>Check your connection or sign in to continue.</EmptyState></section> : isLoading ? <LoadingCards /> : isError ? <section className="dfw-panel"><EmptyState title="Could not load projects" action={<button className="dfw-button" onClick={() => void refetch()}>Try again</button>}>Your projects could not be fetched. Please try again.</EmptyState></section> : <div key={view} className="dfw-page-enter">
+      {view === "overview" && <CloudProviderStatus />}
       {view === "overview" && <section className="dfw-stats" aria-label="Project statistics">{[
         { label: "Total projects", value: projects.length, detail: "Connected repositories", icon: FiLayers },
         { label: "Running", value: running, detail: "Reported as running or deployed", icon: FiActivity },

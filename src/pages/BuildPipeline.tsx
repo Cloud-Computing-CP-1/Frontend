@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useDeployProject } from "../React-Query/DeployProject";
+import BuildDeploymentResult from "./Components/BuildDeploymentResult";
 import { useLocation, Link } from "react-router-dom";
 import {
   FiCloud,
   FiArrowLeft,
   FiPlay,
   FiCheckCircle,
-  FiCopy,
-  FiExternalLink,
   FiKey,
   FiPlus,
   FiTrash2,
@@ -14,11 +15,7 @@ import {
   FiEyeOff,
   FiLayers,
   FiGlobe,
-  FiCheck,
   FiBox,
-  FiServer,
-  FiLock,
-  FiRotateCcw,
 } from "react-icons/fi";
 import BuildProgress from "./Components/BuildProgress";
 import BuildDetails, { type BuildResult } from "./Components/BuildDetails";
@@ -33,11 +30,19 @@ interface EnvVar {
   isSecret: boolean;
 }
 
+const getBuildStatus = (status?: string) => status?.trim().toLowerCase() || "queued";
+const isBuildSuccessful = (status?: string) => ["success", "succeeded", "completed", "ready"].includes(getBuildStatus(status));
+const isBuildFailed = (status?: string) => ["failed", "error", "cancelled", "canceled", "stopped"].includes(getBuildStatus(status));
+
 const BuildPipeline = () => {
   const location = useLocation();
   const { axiosInstance } = UseStateContext()!
   const passedRepo: RepoItem | undefined = location.state?.repo;
-  const projectId: string | undefined = location.state?.projectId;
+  const projectId = location.state?.projectId == null ? undefined : String(location.state.projectId);
+  const deployment = useDeployProject(projectId || "");
+  const queryClient = useQueryClient();
+  const deployBusy = useRef(false);
+  const [deployError, setDeployError] = useState("");
   const { data: projectEnv = [], isLoading: envLoading, isError: envLoadError, refetch: refetchEnv } = UsegetProjectEnv(projectId);
   const hasProjectEnv = projectEnv.length > 0;
 
@@ -51,7 +56,6 @@ const BuildPipeline = () => {
     fork: false,
     updated_at: new Date().toISOString(),
   };
-  console.log(passedRepo)
   // Flow: select repository -> configure -> build image -> deploy image -> live
   const [phase, setPhase] = useState<"config" | "building" | "image-built" | "deploying" | "live">("config");
 
@@ -116,13 +120,11 @@ const BuildPipeline = () => {
 
   // Build configuration options
   const branch = repo.default_branch || "main";
-  const [copiedUrl, setCopiedUrl] = useState(false);
 
 
 
-  // Streaming terminal logs
-  const [, setLogs] = useState<string[]>([]);
-  const logsEndRef = useRef<HTMLDivElement>(null);
+
+
 
   const [build, setBuild] = useState<BuildResult | null>(null);
   const [buildError, setBuildError] = useState("");
@@ -130,11 +132,6 @@ const BuildPipeline = () => {
   const [elapsed, setElapsed] = useState(0);
   const requestBusy = useRef(false);
   const imageReadyRef = useRef<HTMLElement>(null);
-  const getBuildStatus = (status?: string) => status?.trim().toLowerCase() || "queued";
-  const isBuildSuccessful = (status?: string) => ["success", "succeeded", "completed", "ready"].includes(getBuildStatus(status));
-  const isBuildFailed = (status?: string) => ["failed", "cancelled", "canceled", "stopped"].includes(getBuildStatus(status));
-  const imageTag = build?.image.reference || "";
-  const imageId = build?.id || "";
   const shortImageId = build?.id || "";
   useEffect(() => {
     if (phase !== "building") return;
@@ -182,16 +179,6 @@ const BuildPipeline = () => {
     return () => window.cancelAnimationFrame(frame);
   }, [phase]);
 
-  const liveUrl = `https://${repo.name.toLowerCase().replace(/[^a-z0-9]/g, "-")}.deployforge.app`;
-  const deploymentId = `dpl_${shortImageId}`;
-
-  // Auto-scroll logs
-  useEffect(() => {
-    if (logsEndRef.current) {
-      logsEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [phase]);
-
   const addEnvVar = () => {
     const newId = Date.now().toString();
     setEnvVars((prev) => [...prev, { id: newId, key: "", value: "", isSecret: false }]);
@@ -230,7 +217,8 @@ const BuildPipeline = () => {
     setBuild(null);
     setBuildError("");
     setPollError("");
-    setLogs([]);
+    deployment.reset();
+    setDeployError("");
     try {
       const projectid = location.state?.projectId
       const response = await axiosInstance.post("/build/image", { repo: repoUrl, repo_id: repo_id, repo_branch: default_branch, project_id: projectid });
@@ -240,7 +228,7 @@ const BuildPipeline = () => {
         throw new Error(response.data.Sendmessage || "The build service returned an incomplete response.");
       }
       setBuild(result);
-      if (result.status) {
+      if (isBuildSuccessful(result.status)) {
         setPhase("image-built");
         setEnvVars(vars => vars.map(v => v.key === "PORT" ? { ...v, value: String(result.project.port) } : v));
       } else if (isBuildFailed(result.status)) {
@@ -278,6 +266,7 @@ const BuildPipeline = () => {
       if (refreshed.isError || !refreshed.data?.length) throw new Error("Saved variables could not be verified.");
       setEnvSaved(true);
       setEnvNotice("Environment variables saved for this project.");
+      return true;
     } catch {
       setEnvSaved(false);
       setEnvError("Environment variables could not be saved. Please retry before deploying.");
@@ -286,8 +275,12 @@ const BuildPipeline = () => {
     }
   };
   // STEP 2: Deploy Image to Cluster (Triggered by 'Deploy Image' button)
-  const handleDeployImage = () => {
-    if (phase !== "image-built") return;
+  const handleDeployImage = async () => {
+    if (phase !== "image-built" || deployBusy.current || queryClient.isMutating({ mutationKey: ["deploy-project", projectId], exact: true })) return;
+    if (!projectId || !build || !isBuildSuccessful(build.status)) {
+      setDeployError("Open a project and finish building its image before deploying.");
+      return;
+    }
     if (projectId && (envLoading || envLoadError)) return;
     if (hasImportedEnv && !envSaved) {
       setEnvError("Save the imported environment variables before deploying.");
@@ -303,38 +296,27 @@ const BuildPipeline = () => {
       return;
     }
     setEnvError("");
+    setDeployError("");
+    deployBusy.current = true;
     setPhase("deploying");
-
-    const deployLogs = [
-      { text: `\n======================================================`, delay: 100 },
-      { text: `🚀 INITIATING CLUSTER ROLLOUT FOR IMAGE ${shortImageId}`, delay: 300 },
-      { text: `======================================================`, delay: 400 },
-      { text: `[Kubernetes] ➔ Connecting to cluster control plane (us-east-1-cluster)...`, delay: 600 },
-      { text: `[Kubernetes] ➔ Pulling verified image: ${imageTag}...`, delay: 900 },
-      { text: `[Kubernetes] ➔ Injected runtime environment variables (${keys.join(", ")}).`, delay: 1200 },
-      { text: `[Kubernetes] ➔ Provisioning Pod replica [deployforge-pod-${shortImageId}-8x92k]...`, delay: 1500 },
-      { text: `[Kubernetes] ➔ Container started on port 3000 (status: Running).`, delay: 1800 },
-      { text: `[Ingress]    ➔ Binding domain ${liveUrl} -> Cluster Ingress Controller...`, delay: 2100 },
-      { text: `[Security]   ➔ Automatic TLS 1.3 certificate signed by Let's Encrypt CA.`, delay: 2400 },
-      { text: `[Probes]     ➔ GET http://localhost:3000/healthz: HTTP 200 OK (latency: 14ms)`, delay: 2700 },
-      { text: `✓ DEPLOYMENT IS LIVE! Edge CDN active across 240+ global PoPs.`, delay: 3000 },
-    ];
-
-    deployLogs.forEach(({ text, delay }) => {
-      setTimeout(() => {
-        setLogs((prev) => [...prev, text]);
-      }, delay);
-    });
-
-    setTimeout(() => {
+    try {
+      if (!hasProjectEnv && !envSaved && !await saveEnv()) {
+        setPhase("image-built");
+        return;
+      }
+      const currentResponse = await axiosInstance.get("/project/get-current-ruining-image/" + encodeURIComponent(projectId));
+      const currentImage = currentResponse.data.responseData;
+      if (!currentResponse.data.Status || !currentImage?.image_uri || String(currentImage.project_id) !== projectId || String(currentImage.image_digest) !== build.id) {
+        throw new Error("This build is no longer the project's current image. Open the project to review the current image before deploying.");
+      }
+      await deployment.mutateAsync();
       setPhase("live");
-    }, 3400);
-  };
-
-  const copyLiveUrl = () => {
-    navigator.clipboard.writeText(liveUrl);
-    setCopiedUrl(true);
-    setTimeout(() => setCopiedUrl(false), 2000);
+    } catch (error) {
+      setDeployError(error instanceof Error ? error.message : "Deployment failed. Check deployment history before trying again.");
+      setPhase("image-built");
+    } finally {
+      deployBusy.current = false;
+    }
   };
 
   return (
@@ -396,14 +378,14 @@ const BuildPipeline = () => {
           {phase === "deploying" && (
             <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-400 text-xs font-semibold border border-indigo-500/20 animate-pulse">
               <span className="w-2 h-2 rounded-full bg-indigo-500 animate-ping" />
-              Deploying Image to Cluster…
+              Deploying application…
             </span>
           )}
 
           {phase === "live" && (
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-semibold border border-emerald-500/20 shadow-xs">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              Production Live
+              {deployment.data?.status || "Deployment completed"}
             </span>
           )}
         </div>
@@ -493,12 +475,14 @@ const BuildPipeline = () => {
                 )}
               </div>
               <h4 className="text-xs font-bold text-[var(--text-primary)]">Deploy Image</h4>
-              <p className="text-[11px] text-[var(--text-muted)] mt-0.5">Cluster Rollout & SSL</p>
+              <p className="text-[11px] text-[var(--text-muted)] mt-0.5">Deploy to cloud</p>
             </div>
 
           </div>
         </section>
 
+        {deployError && <div role="alert" className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-sm text-rose-400">{deployError}{projectId && <Link className="ml-2 underline" to={`/projects/${projectId}?tab=deployments`}>View deployment history</Link>}</div>}
+        {!projectId && <p role="alert" className="text-sm text-amber-400">Open this build from a project to deploy it.</p>}
         {buildError && <div role="alert" className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-sm text-rose-400">{buildError}</div>}
         {phase === "building" && (
           <BuildProgress status={getBuildStatus(build?.status)} repository={repo.full_name || repo.name} branch={branch} elapsed={elapsed} warning={pollError} />
@@ -545,7 +529,7 @@ const BuildPipeline = () => {
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                       Image Built Successfully
                     </span>
-                    <span className="text-xs text-[var(--text-muted)]">Ready for Cluster Deployment</span>
+                    <span className="text-xs text-[var(--text-muted)]">Ready to deploy</span>
                   </div>
                   <h3 className="text-base font-bold text-[var(--text-primary)] mt-1">
                     Docker Container Image Artifact
@@ -681,7 +665,7 @@ const BuildPipeline = () => {
                 {/* 'Deploy Image' Button */}
                 <button
                   onClick={handleDeployImage}
-                  disabled={envSaving || Boolean(projectId && (envLoading || envLoadError)) || (hasImportedEnv && !envSaved)}
+                  disabled={!projectId || deployment.isPending || envSaving || Boolean(projectId && (envLoading || envLoadError)) || (hasImportedEnv && !envSaved)}
                   className="bg-[var(--primary)] hover:bg-blue-700 text-white font-bold text-xs px-6 py-2.5 rounded-xl shadow-none transition cursor-pointer flex items-center justify-center gap-2 active:scale-98 shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <FiPlay className="w-4 h-4 fill-current" />
@@ -692,183 +676,8 @@ const BuildPipeline = () => {
           </section>
         )}
 
-        {/* PHASE 5: Production Live Console (Vercel/Railway Production Grade UI) */}
-        {phase === "live" && (
-          <section className="space-y-6 animate-fadeIn">
-
-            {/* Top Deployment Header Card */}
-            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6 shadow-sm">
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-[var(--border)]">
-
-                {/* Left: Project & Domain Info */}
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2.5 flex-wrap">
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-semibold shadow-xs">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                      Production Ready
-                    </span>
-
-                    <span className="font-mono text-xs text-[var(--text-secondary)] bg-[var(--surface-secondary)] px-2 py-0.5 rounded-md border border-[var(--border)]">
-                      {deploymentId}
-                    </span>
-
-                    <span className="text-xs text-[var(--text-muted)]">
-                      • Deployed 14 seconds ago
-                    </span>
-                  </div>
-
-                  {/* Main Domain Link */}
-                  <div className="flex items-center gap-2">
-                    <a
-                      href={liveUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xl sm:text-2xl font-bold text-[var(--text-primary)] hover:text-[var(--primary)] transition flex items-center gap-2 group tracking-tight"
-                    >
-                      <span>{repo.name.toLowerCase().replace(/[^a-z0-9]/g, "-")}.deployforge.app</span>
-                      <FiExternalLink className="w-4 h-4 text-[var(--text-muted)] group-hover:text-[var(--primary)] transition" />
-                    </a>
-                  </div>
-
-                  <p className="text-xs text-[var(--text-muted)] flex items-center gap-2">
-                    <FiLock className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>Automatic SSL TLS 1.3 Active • Global Edge Routing (240+ PoPs)</span>
-                  </p>
-                </div>
-
-                {/* Right: Primary Action Buttons */}
-                <div className="flex items-center gap-3 shrink-0 flex-wrap">
-                  <button
-                    onClick={copyLiveUrl}
-                    className="h-10 px-4 rounded-xl bg-[var(--surface-secondary)] hover:bg-[var(--surface-secondary)]/80 border border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-xs font-semibold transition cursor-pointer flex items-center gap-2"
-                  >
-                    {copiedUrl ? <FiCheck className="w-4 h-4 text-emerald-400" /> : <FiCopy className="w-4 h-4 text-[var(--text-muted)]" />}
-                    <span>{copiedUrl ? "Copied URL" : "Copy URL"}</span>
-                  </button>
-
-                  <a
-                    href={liveUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="h-10 px-5 rounded-xl bg-[var(--primary)] hover:bg-blue-700 text-white text-xs font-semibold transition shadow-none flex items-center gap-2 cursor-pointer active:scale-98"
-                  >
-                    <span>Visit Live Application</span>
-                    <FiExternalLink className="w-4 h-4" />
-                  </a>
-                </div>
-
-              </div>
-
-              {/* Production Metadata Summary Bar */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-5 text-xs">
-                <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] block mb-0.5">Cluster Instance</span>
-                  <p className="font-semibold text-[var(--text-primary)] flex items-center gap-1.5">
-                    <FiServer className="w-3.5 h-3.5 text-blue-400" />
-                    AWS us-east-1 (1 Pod)
-                  </p>
-                </div>
-
-                <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] block mb-0.5">Container Image</span>
-                  <p className="font-mono text-xs font-bold text-[var(--text-primary)] truncate" title={imageId}>
-                    {build?.image.reference}
-                  </p>
-                </div>
-
-                <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] block mb-0.5">Source Git Branch</span>
-                  <p className="font-semibold text-[var(--text-primary)] font-mono">
-                    main · commit 8f4e2b1
-                  </p>
-                </div>
-
-                <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] block mb-0.5">Health Probe</span>
-                  <p className="font-semibold text-emerald-400 flex items-center gap-1">
-                    <FiCheckCircle className="w-3.5 h-3.5 text-emerald-400" />
-                    200 OK (14ms latency)
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Interactive Browser Preview Card (Vercel Style) */}
-            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl overflow-hidden shadow-sm">
-
-              {/* Browser Window Chrome */}
-              <div className="bg-[var(--surface-secondary)] border-b border-[var(--border)] px-4 py-2.5 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="w-3 h-3 rounded-full bg-rose-400/80 inline-block" />
-                  <span className="w-3 h-3 rounded-full bg-amber-400/80 inline-block" />
-                  <span className="w-3 h-3 rounded-full bg-emerald-400/80 inline-block" />
-                </div>
-
-                {/* Mock Address Bar */}
-                <div className="bg-[var(--surface)] border border-[var(--border)] rounded-lg px-3 py-1 text-xs text-[var(--text-secondary)] font-mono flex items-center gap-1.5 max-w-sm w-full">
-                  <FiLock className="w-3 h-3 text-emerald-400 shrink-0" />
-                  <span className="truncate">{liveUrl}</span>
-                </div>
-
-                <div className="flex items-center gap-1.5 text-[var(--text-muted)]">
-                  <button
-                    onClick={copyLiveUrl}
-                    className="hover:text-[var(--text-primary)] p-1 rounded transition cursor-pointer"
-                    title="Copy URL"
-                  >
-                    <FiCopy className="w-3.5 h-3.5" />
-                  </button>
-                  <a
-                    href={liveUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-[var(--text-primary)] p-1 rounded transition"
-                    title="Open in new tab"
-                  >
-                    <FiExternalLink className="w-3.5 h-3.5" />
-                  </a>
-                </div>
-              </div>
-
-              {/* Preview Content Area */}
-              <div className="p-8 bg-gradient-to-b from-[var(--surface-secondary)] to-[var(--surface)] min-h-[260px] flex flex-col items-center justify-center text-center">
-                <div className="w-14 h-14 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 mb-4 shadow-sm">
-                  <FiGlobe className="w-7 h-7" />
-                </div>
-
-                <h4 className="text-base font-bold text-[var(--text-primary)]">
-                  {repo.name} is running in production
-                </h4>
-
-                <p className="text-xs text-[var(--text-muted)] mt-1 max-w-md">
-                  Serving HTTP traffic with automatic SSL encryption and edge caching across global endpoints.
-                </p>
-
-                <div className="flex items-center gap-3 mt-5">
-                  <a
-                    href={liveUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="bg-[var(--primary)] hover:bg-blue-700 text-white text-xs font-semibold px-4 py-2 rounded-xl shadow-sm transition flex items-center gap-1.5"
-                  >
-                    <span>Open Live Preview</span>
-                    <FiExternalLink className="w-3.5 h-3.5" />
-                  </a>
-
-                  <button
-                    onClick={handleBuildImage}
-                    className="bg-[var(--surface-secondary)] hover:bg-[var(--surface)] border border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-xs font-semibold px-4 py-2 rounded-xl transition flex items-center gap-1.5 cursor-pointer"
-                  >
-                    <FiRotateCcw className="w-3.5 h-3.5 text-[var(--text-muted)]" />
-                    <span>Redeploy Container</span>
-                  </button>
-                </div>
-              </div>
-
-            </div>
-
-          </section>
-        )}
+        {phase === "deploying" && <section role="status" className="rounded-2xl border border-blue-500/30 bg-[var(--surface)] p-8 text-center"><FiCloud className="mx-auto mb-4 h-8 w-8 text-blue-400 animate-pulse" /><h2 className="font-semibold">Deploying your application</h2><p className="mt-2 text-sm text-[var(--text-secondary)]">Waiting for the cloud provider. This can take a few minutes.</p></section>}
+        {phase === "live" && deployment.data && build && projectId && <BuildDeploymentResult result={deployment.data} build={build} projectId={projectId} branch={branch} onBuildAgain={handleBuildImage} />}
       </div>
 
     </main>

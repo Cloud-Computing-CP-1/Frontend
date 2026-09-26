@@ -1,0 +1,89 @@
+﻿.build-result { position:relative; isolation:isolate; overflow:hidden; border:1px solid var(--border); border-radius:20px; background:var(--surface); }
+.build-result.is-successful { border-color:#34d39930; background:radial-gradient(ellipse at 0% 25%, #10b9810c, transparent 55%), var(--surface); }
+.build-result-topline { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:21px 32px; border-bottom:1px solid var(--border); }
+.build-result-eyebrow { display:flex; align-items:center; gap:9px; margin:0; color:var(--text-secondary); font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; }
+.build-result-indicator { width:6px; height:6px; border-radius:50%; background:var(--text-muted); }
+.is-successful .build-result-indicator { background:#34d399; box-shadow:0 0 0 4px #34d39910; }
+.build-result-hero { position:relative; z-index:1; display:grid; grid-template-columns:minmax(0, 1fr) minmax(0, 1.12fr); align-items:center; gap:56px; padding:36px 40px 38px; }
+.build-result-message { min-width:0; }
+.build-result-emblem { display:grid; place-items:center; width:48px; height:48px; margin-bottom:20px; border:1px solid #34d39940; border-radius:15px; background:linear-gradient(140deg, #34d3991c, #10b98106); color:#6ee7b7; box-shadow:0 0 25px #10b98108; }
+.build-result-emblem > svg { width:25px; height:25px; stroke-width:2; }
+.build-result.is-successful .build-result-emblem { animation:build-result-arrive .6s cubic-bezier(.22,1,.36,1) both; }
+.build-result-hero h2 { margin:0; color:var(--text-primary); font-size:clamp(30px, 3.1vw, 44px); line-height:1.12; font-weight:700; letter-spacing:-.045em; }
+.build-result-hero h2 span { color:#6ee7b7; }
+.build-result-description { max-width:325px; margin:16px 0 0; color:var(--text-secondary); font-size:13px; line-height:1.8; }
+.build-result-site { min-width:0; border:1px solid var(--border-secondary, var(--border)); border-radius:14px; background:var(--background); box-shadow:0 12px 35px #00000018; }
+.build-result-site-bar { display:flex; align-items:center; justify-content:space-between; gap:12px; height:44px; padding:0 18px; border-bottom:1px solid var(--border); color:var(--text-muted); font-size:10px; }
+.build-result-site-bar > svg { width:13px; height:13px; }
+.build-result-window-dots { display:flex; align-items:center; gap:5px; }
+.build-result-window-dots i { width:6px; height:6px; border-radius:50%; background:#465065; }
+.build-result-window-dots i:first-child { background:#617087; }
+.build-result-window-dots i:last-child { background:#34d39970; }
+.build-result-site-body { padding:26px 24px; }
+.build-result-site-label { color:var(--text-muted); font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.1em; }
+.build-result-address { margin:10px 0 12px; }
+.build-result-address a { display:flex; align-items:center; justify-content:space-between; gap:12px; min-width:0; color:var(--text-primary); font-size:clamp(15px, 1.6vw, 20px); line-height:1.5; font-weight:600; letter-spacing:-.02em; overflow-wrap:anywhere; }
+.build-result-address a:hover { color:#6ee7b7; }
+.build-result-address a svg { width:18px; height:18px; flex-shrink:0; color:var(--text-muted); }
+.build-result-site-body > p { margin:0; color:var(--text-muted); font-size:11px; line-height:1.7; }
+.build-result-actions { display:grid; grid-template-columns:minmax(0, 1fr) auto; gap:10px; margin-top:24px; }
+.build-result-visit, .build-result-actions .dfw-button { display:inline-flex; align-items:center; justify-content:center; gap:9px; min-height:42px; padding:0 16px; border-radius:8px; font-size:12px; font-weight:600; }
+.build-result-visit { border:1px solid #6ee7b750; background:#34d399; color:#052e24; transition:background .15s; }
+.build-result-visit:hover { background:#6ee7b7; }
+.build-result-actions .dfw-button { width:100%; background:var(--surface); }
+.build-result-context { position:relative; z-index:1; display:grid; grid-template-columns:minmax(0, 1fr) minmax(0, .8fr) minmax(0, 1fr); gap:24px; margin:0 32px; padding:22px 0; border-top:1px solid var(--border); }
+.build-result-context > div { display:flex; align-items:center; gap:11px; min-width:0; }
+.build-result-context > div > div { min-width:0; }
+.build-result-meta-icon { display:grid; place-items:center; flex-shrink:0; width:33px; height:33px; border:1px solid var(--border); border-radius:9px; color:var(--text-muted); background:var(--surface-secondary); }
+.build-result-meta-label { display:block; margin-bottom:5px; color:var(--text-muted); font-size:10px; }
+.build-result-context strong { display:block; color:var(--text-secondary); font-size:12px; font-weight:500; overflow-wrap:anywhere; }
+.build-result-context .build-result-build-id { display:block; }
+.build-result-build-id code { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--text-secondary); font-size:11px; }
+.build-result-bottom { position:relative; z-index:1; border-top:1px solid var(--border); background:var(--surface); }
+.build-result-details { padding:17px 32px; }
+.build-result-details summary { display:flex; align-items:center; gap:8px; width:fit-content; color:var(--text-secondary); cursor:pointer; font-size:11px; list-style:none; }
+.build-result-details summary::-webkit-details-marker { display:none; }
+.build-result-details summary svg:last-child { margin-left:6px; }
+.build-result-details[open] summary svg:last-child { transform:rotate(180deg); }
+.build-result-details dl { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:22px; margin:24px 0 6px; }
+.build-result-details dt { margin-bottom:7px; color:var(--text-muted); font-size:10px; text-transform:uppercase; letter-spacing:.04em; }
+.build-result-details dd { margin:0; color:var(--text-secondary); font-size:12px; overflow-wrap:anywhere; }
+.build-result-footer { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; padding:16px 32px; border-top:1px solid var(--border); font-size:11px; }
+.build-result-footer a, .build-result-footer button { display:inline-flex; align-items:center; gap:7px; }
+.build-result-footer a { color:#93c5fd; }
+.build-result-footer button { color:var(--text-secondary); cursor:pointer; }
+.build-result :is(a,button,summary):focus-visible { outline:2px solid #6ee7b7; outline-offset:5px; }
+.build-result-confetti { position:absolute; z-index:2; inset:0; overflow:hidden; pointer-events:none; }
+.build-result-confetti i { position:absolute; top:-15px; width:5px; height:8px; opacity:0; animation:build-result-confetti 2.6s ease-out both; }
+@keyframes build-result-confetti {
+  0% { opacity:0; transform:translate3d(0,-15px,0) rotate(0); }
+  12% { opacity:.75; }
+  75% { opacity:.45; }
+  100% { opacity:0; transform:translate3d(var(--confetti-drift),400px,0) rotate(var(--confetti-turn)); }
+}
+@keyframes build-result-arrive { from { opacity:0; transform:translateY(10px) scale(.8); } to { opacity:1; transform:translateY(0) scale(1); } }
+@media(max-width:800px) {
+  .build-result-hero { grid-template-columns:1fr; gap:26px; padding:28px 24px; }
+  .build-result-description { max-width:100%; }
+  .build-result-message { padding:0 2px; }
+  .build-result-emblem { margin-bottom:18px; }
+  .build-result-context { margin:0 24px; gap:20px; grid-template-columns:repeat(2, minmax(0, 1fr)); }
+  .build-result-build-id { grid-column:1/-1; }
+  .build-result-details dl { grid-template-columns:1fr; gap:18px; }
+}
+@media(max-width:480px) {
+  .build-result-topline { padding:18px 20px; }
+  .build-result-eyebrow { font-size:9px; }
+  .build-result-hero { padding:24px 18px; }
+  .build-result-description { font-size:12px; }
+  .build-result-site-body { padding:20px 16px; }
+  .build-result-site-bar { padding:0 16px; }
+  .build-result-actions { gap:8px; }
+  .build-result-visit, .build-result-actions .dfw-button { padding:0 12px; font-size:11px; }
+  .build-result-context { margin:0 20px; }
+  .build-result-details, .build-result-footer { padding:16px 20px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .build-result-confetti { display:none; }
+  .build-result.is-successful .build-result-emblem { animation:none; }
+}

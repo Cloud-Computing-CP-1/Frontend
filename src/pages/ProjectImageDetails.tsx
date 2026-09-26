@@ -7,6 +7,7 @@ import WorkspaceLayout from "./Components/WorkspaceLayout";
 import ProjectEnvironment from "./Components/ProjectEnvironment";
 import { StatusBadge } from "./Components/WorkspaceUI";
 import { projectRepository } from "./project.service";
+import DeployProject from "./Components/DeployProject";
 
 const formatDate = (value: string | null) => {
   if (!value) return "—";
@@ -38,7 +39,7 @@ export default function ProjectImageDetails() {
                   <dl className="grid grid-cols-1 sm:grid-cols-2 gap-5 mt-6 text-sm"><div><dt className="text-[11px] font-semibold uppercase tracking-wide text-[var(--text-muted)]">Branch</dt><dd className="mt-1 inline-flex items-center gap-1.5 text-[var(--text-primary)]"><FiGitBranch /> {image.branch}</dd></div><div><dt className="text-[11px] font-semibold uppercase tracking-wide text-[var(--text-muted)]">Built</dt><dd className="mt-1 text-[var(--text-primary)]">{formatDate(image.build_completed_at || image.created_at)}</dd></div><div className="sm:col-span-2"><dt className="text-[11px] font-semibold uppercase tracking-wide text-[var(--text-muted)]">Image URI</dt><dd className="mt-1 font-mono text-xs text-blue-300 break-all">{image.image_uri || "Unavailable"}</dd></div><div className="sm:col-span-2"><dt className="text-[11px] font-semibold uppercase tracking-wide text-[var(--text-muted)]">Build ID</dt><dd className="mt-1 font-mono text-xs text-[var(--text-secondary)] break-all">{image.image_digest || "Unavailable"}</dd></div></dl>
                 </section>
                 <div className="mt-5"><ProjectEnvironment key={projectId} projectId={projectId} /></div>
-                <div className="mt-5 rounded-xl border border-blue-500/20 bg-blue-500/10 p-4 text-xs text-blue-300">Deployment from a saved image is not connected to a backend deployment action yet.</div>
+                <DeployProject key={`${projectId}-${imageId}`} projectId={projectId} imageId={imageId} />
               </>}
     </div>
   </WorkspaceLayout>;

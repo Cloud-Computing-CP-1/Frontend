@@ -14,7 +14,7 @@ export default function CurrentProjectImage({ projectId }: { projectId: string }
   return <>
     <section className="mt-4 bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5 sm:p-6 shadow-xs" aria-labelledby="current-image-heading">
       <div className="flex items-start justify-between gap-3 mb-5">
-        <div><h2 id="current-image-heading" className="text-base font-semibold text-[var(--text-primary)]">Application running on this image</h2><p className="text-xs text-[var(--text-secondary)] mt-1">The image currently selected for this project.</p></div>
+        <div><h2 id="current-image-heading" className="text-base font-semibold text-[var(--text-primary)]">Current project image</h2><p className="text-xs text-[var(--text-secondary)] mt-1">The image selected for your next deployment.</p></div>
         <button type="button" onClick={() => refetch()} disabled={isFetching} aria-label="Refresh current image" className="w-8 h-8 shrink-0 rounded-lg border border-[var(--border)] bg-[var(--surface-secondary)] flex items-center justify-center text-[var(--text-secondary)] hover:bg-[var(--surface-secondary)]/80 hover:text-[var(--text-primary)] disabled:opacity-50 cursor-pointer"><FiRefreshCw className={isFetching ? "animate-spin" : ""} /></button>
       </div>
       {isLoading ? <p role="status" className="text-sm text-[var(--text-muted)] py-4">Loading current image...</p>
