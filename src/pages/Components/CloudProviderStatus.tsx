@@ -20,7 +20,7 @@ export default function CloudProviderStatus() {
     {!!items.length && <div className="cloud-heartbeat-grid">{items.map(provider => {
       const brand = cloudBrand(provider.provider_name);
       const state = !known ? "unknown" : provider.is_enabled ? "live" : "outage";
-      return <article key={provider.id} className={`cloud-heartbeat-card is-${state}`} data-provider={provider.provider_name} title={`${brand.name} · ${state === "live" ? "Enabled" : state === "outage" ? "Disabled" : "Unknown"} · Setting updated ${formatTimestamp(provider.updated_at)}`}>
+      return <article key={provider.id} className={`cloud-heartbeat-card cloud-heartbeat-${brand.tone} is-${state}`} data-provider={provider.provider_name} title={`${brand.name} · ${state === "live" ? "Enabled" : state === "outage" ? "Disabled" : "Unknown"} · Setting updated ${formatTimestamp(provider.updated_at)}`}>
         <span className={`cloud-heartbeat-logo brand-${brand.tone}`}><brand.icon aria-hidden="true" /></span>
         <h3>{provider.provider_name.toUpperCase()}</h3>
         <span className="cloud-heartbeat-badge"><i aria-hidden="true" />{state === "live" ? "Live" : state === "outage" ? "Outage" : "Unknown"}</span>

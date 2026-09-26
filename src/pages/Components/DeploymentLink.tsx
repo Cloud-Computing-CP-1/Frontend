@@ -8,7 +8,7 @@ export default function DeploymentLink({ url, projectName, cloudProvider }: { ur
   if (!address) return null;
   const brand = cloudBrand(cloudProvider);
 
-  return <div className="deployment-endpoint">
+  return <div className={`deployment-endpoint deployment-endpoint-${brand.tone}`}>
     <span className={`deployment-brand deployment-brand-${brand.tone}`}><brand.icon aria-hidden="true" /></span>
     <div className="deployment-endpoint-content">
       <span className="deployment-eyebrow">Application endpoint</span>

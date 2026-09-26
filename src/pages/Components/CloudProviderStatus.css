@@ -5,7 +5,10 @@
 .cloud-heartbeat-summary { color:var(--text-secondary); font-size:10px; }
 .cloud-heartbeat-summary > span { color:var(--text-muted); }
 .cloud-heartbeat-grid { display:grid; flex:1; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; min-width:0; }
-.cloud-heartbeat-card { --signal:#64748b; display:flex; align-items:center; gap:8px; min-width:0; padding:9px 11px; border:1px solid var(--border); border-radius:8px; background:var(--background); }
+.cloud-heartbeat-card { --signal:#64748b; --cloud-accent:#94a3b8; display:flex; align-items:center; gap:8px; min-width:0; padding:9px 11px; border:1px solid color-mix(in srgb,var(--cloud-accent) 25%,var(--border)); border-radius:8px; background:linear-gradient(115deg, color-mix(in srgb,var(--cloud-accent) 12%,transparent), transparent 85%), var(--background); }
+.cloud-heartbeat-aws { --cloud-accent:#ff9900; }
+.cloud-heartbeat-gcp { --cloud-accent:#4285f4; }
+.cloud-heartbeat-azure { --cloud-accent:#00b7ed; }
 .cloud-heartbeat-card.is-live { --signal:#34d399; }
 .cloud-heartbeat-card.is-outage { --signal:#fb7185; border-color:#fb71852e; }
 .cloud-heartbeat-logo { display:grid; place-items:center; flex-shrink:0; width:24px; height:24px; color:var(--text-secondary); }
