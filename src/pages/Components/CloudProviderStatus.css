@@ -1,38 +1,37 @@
-.cloud-heartbeat { margin-bottom:24px; border:1px solid var(--border); border-radius:13px; background:var(--surface); overflow:hidden; }
-.cloud-heartbeat-heading { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px; padding:22px 22px 18px; }
-.cloud-heartbeat-heading h2 { display:flex; align-items:center; gap:8px; margin:0; font-size:15px; font-weight:600; color:var(--text-primary); }
-.cloud-heartbeat-heading h2 svg { color:#60a5fa; }
-.cloud-heartbeat-heading p { margin:5px 0 0; color:var(--text-muted); font-size:12px; }
-.cloud-heartbeat-summary { padding:5px 9px; border:1px solid var(--border); border-radius:6px; background:var(--surface-secondary); color:var(--text-secondary); font-size:11px; }
-.cloud-heartbeat-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; padding:0 22px 22px; }
-.cloud-heartbeat-card { --signal:#64748b; min-width:0; padding:16px; border:1px solid var(--border); border-radius:10px; background:var(--background); }
+.cloud-heartbeat { display:flex; align-items:center; flex-wrap:wrap; gap:12px 22px; margin-bottom:20px; padding:12px 16px; border:1px solid var(--border); border-radius:11px; background:var(--surface); }
+.cloud-heartbeat-heading { flex-shrink:0; }
+.cloud-heartbeat-heading h2 { display:flex; align-items:center; gap:7px; margin:0 0 4px; font-size:12px; font-weight:600; color:var(--text-primary); }
+.cloud-heartbeat-heading h2 svg { width:13px; height:13px; color:#60a5fa; }
+.cloud-heartbeat-summary { color:var(--text-secondary); font-size:10px; }
+.cloud-heartbeat-summary > span { color:var(--text-muted); }
+.cloud-heartbeat-grid { display:grid; flex:1; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; min-width:0; }
+.cloud-heartbeat-card { --signal:#64748b; display:flex; align-items:center; gap:8px; min-width:0; padding:9px 11px; border:1px solid var(--border); border-radius:8px; background:var(--background); }
 .cloud-heartbeat-card.is-live { --signal:#34d399; }
 .cloud-heartbeat-card.is-outage { --signal:#fb7185; border-color:#fb71852e; }
-.cloud-heartbeat-card-top { display:flex; justify-content:space-between; align-items:center; gap:10px; }
-.cloud-heartbeat-logo { display:grid; place-items:center; width:38px; height:38px; border:1px solid var(--border); border-radius:10px; background:var(--surface-secondary); color:var(--text-secondary); }
-.cloud-heartbeat-logo svg { width:24px; height:24px; }
+.cloud-heartbeat-logo { display:grid; place-items:center; flex-shrink:0; width:24px; height:24px; color:var(--text-secondary); }
+.cloud-heartbeat-logo svg { width:21px; height:21px; }
 .cloud-heartbeat-logo.brand-aws { color:#ffb454; }
 .cloud-heartbeat-logo.brand-gcp { color:#7baaff; }
 .cloud-heartbeat-logo.brand-azure { color:#62d5ed; }
-.cloud-heartbeat-badge { display:inline-flex; align-items:center; gap:6px; padding:3px 7px; border:1px solid color-mix(in srgb,var(--signal) 28%,transparent); border-radius:5px; background:color-mix(in srgb,var(--signal) 8%,transparent); color:var(--signal); font-size:10px; font-weight:500; }
-.cloud-heartbeat-badge i { width:5px; height:5px; border-radius:50%; background:currentColor; }
+.cloud-heartbeat-card h3 { margin:0; color:var(--text-primary); font-size:11px; font-weight:600; overflow-wrap:anywhere; }
+.cloud-heartbeat-badge { display:inline-flex; align-items:center; gap:5px; margin-left:auto; color:var(--signal); font-size:10px; font-weight:500; white-space:nowrap; }
+.cloud-heartbeat-badge i { flex-shrink:0; width:5px; height:5px; border-radius:50%; background:currentColor; }
 .is-live .cloud-heartbeat-badge i { animation:cloud-heartbeat-pulse 2s ease-out infinite; }
-.cloud-heartbeat-card h3 { margin:14px 0 4px; font-size:13px; font-weight:600; color:var(--text-primary); }
-.cloud-heartbeat-card > p { margin:0; color:var(--text-secondary); font-size:11px; }
-.cloud-heartbeat-signal { display:block; width:100%; height:32px; margin:14px 0; fill:none; stroke:var(--signal); stroke-width:1.5; }
-.cloud-heartbeat-signal path { vector-effect:non-scaling-stroke; }
-.cloud-heartbeat-signal .cloud-heartbeat-baseline { opacity:.12; }
-.cloud-heartbeat-updated { display:flex; align-items:flex-start; gap:6px; border-top:1px solid var(--border); padding-top:11px; color:var(--text-muted); font-size:10px; line-height:1.5; }
-.cloud-heartbeat-updated svg { flex-shrink:0; margin-top:2px; }
-.cloud-heartbeat-footer { display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px 20px; padding:12px 22px; border-top:1px solid var(--border); color:var(--text-muted); font-size:10px; }
-.cloud-heartbeat-loading, .cloud-heartbeat-empty { padding:24px; text-align:center; color:var(--text-secondary); font-size:12px; }
-.cloud-heartbeat-empty > svg { margin:0 auto 8px; width:24px; height:24px; }
-.cloud-heartbeat-error { margin:0 22px 18px; padding:12px; border:1px solid #fbbf2433; border-radius:8px; background:#fbbf2408; color:#fcd34d; font-size:12px; line-height:1.6; }
-@keyframes cloud-heartbeat-pulse { 0% { box-shadow:0 0 0 0 #34d39940; } 70%,100% { box-shadow:0 0 0 5px #34d39900; } }
-@media(max-width:700px) {
-  .cloud-heartbeat-grid { grid-template-columns:1fr; padding:0 16px 16px; }
-  .cloud-heartbeat-heading { padding:18px 16px; }
-  .cloud-heartbeat-footer { padding:12px 16px; }
-  .cloud-heartbeat-error { margin:0 16px 16px; }
+.cloud-heartbeat-loading, .cloud-heartbeat-empty { display:flex; align-items:center; gap:8px; color:var(--text-secondary); font-size:11px; }
+.cloud-heartbeat-empty p { margin:0; }
+.cloud-heartbeat-error { flex-basis:100%; order:2; margin:0; color:#fcd34d; font-size:11px; line-height:1.5; }
+@keyframes cloud-heartbeat-pulse { 0% { box-shadow:0 0 0 0 #34d39940; } 70%,100% { box-shadow:0 0 0 4px #34d39900; } }
+@media(max-width:900px) {
+  .cloud-heartbeat-heading { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px 12px; flex-basis:100%; }
+  .cloud-heartbeat-heading h2 { margin:0; }
+  .cloud-heartbeat-grid { flex-basis:100%; }
+}
+@media(max-width:480px) {
+  .cloud-heartbeat { padding:12px; gap:10px; }
+  .cloud-heartbeat-grid { gap:6px; }
+  .cloud-heartbeat-card { display:grid; grid-template-columns:20px auto; justify-content:center; gap:5px; padding:8px 5px; }
+  .cloud-heartbeat-logo, .cloud-heartbeat-logo svg { width:19px; height:19px; }
+  .cloud-heartbeat-card h3 { font-size:10px; }
+  .cloud-heartbeat-badge { grid-column:1/-1; justify-content:center; margin:0; }
 }
 @media(prefers-reduced-motion:reduce) { .is-live .cloud-heartbeat-badge i { animation:none; } }
