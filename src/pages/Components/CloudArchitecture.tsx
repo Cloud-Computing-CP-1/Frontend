@@ -22,7 +22,7 @@ export default function CloudArchitecture() {
     <div className={`cloud-map${paused ? ' is-paused' : ''}`} role="group" aria-label="Multi-cloud architecture preview">
       <div className="cloud-map-toolbar">
         <span className="cloud-map-caption"><span /> Architecture preview</span>
-        <button className="cloud-map-motion" type="button" onClick={() => setPaused(!paused)} aria-pressed={paused} aria-label="Pause diagram animation">
+        <button className="cloud-map-motion" type="button" onClick={() => setPaused(!paused)} aria-pressed={paused} aria-label={paused ? 'Resume diagram animation' : 'Pause diagram animation'}>
           {paused ? <HiPlay aria-hidden="true" /> : <HiPause aria-hidden="true" />}
           <span>{paused ? 'Resume motion' : 'Pause motion'}</span>
         </button>
