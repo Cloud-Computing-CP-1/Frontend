@@ -5,12 +5,12 @@ import { HiArrowRight, HiMenu, HiX } from "react-icons/hi";
 import { UsergetUser } from "../../React-Query/Auth";
 import "./PublicNavbar.css";
 
-export default function PublicNavbar() {
+export default function PublicNavbar({ items = ["Product", "How It Works", "Pricing"] }: { items?: string[] }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const { data: user, isLoading, isError } = UsergetUser();
   const loggedIn = Boolean(user?.id) && !isError;
   const label = loggedIn ? "Dashboard" : "Login";
-  const nav = ["Product", "How It Works", "Pricing"];
+  const nav = items;
   const authAction = isLoading ? <span className="df-auth-loading" role="status" aria-label="Checking session" /> : <Link key={label} className="df-auth-link" to={loggedIn ? "/dashboard" : "/login"} onClick={() => setMenuOpen(false)}>{label}<HiArrowRight /></Link>;
 
   return <header className="df-nav df-public-nav">

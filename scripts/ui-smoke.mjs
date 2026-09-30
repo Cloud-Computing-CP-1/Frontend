@@ -365,7 +365,9 @@ try {
   assert.equal(await evaluate('document.body.innerText.includes("Deployment response received")'), false, 'deployment completed using a fake timer');
   await waitFor('document.body.innerText.includes("Deployment response received")', 'real deployment result');
   assert.ok(await evaluate('document.querySelector(".build-result.is-successful h2")?.textContent.includes("successfully!")'));
-  assert.ok(await evaluate('document.querySelector(".build-result-confetti")?.getAttribute("aria-hidden") === "true"'));
+  assert.ok(await evaluate('document.querySelector(".build-result-startup")?.textContent.includes("up to 5 minutes")'));
+  assert.ok(await evaluate('document.querySelector(".build-result-startup")?.textContent.includes("503 Service Unavailable")'));
+  assert.ok(await evaluate('document.querySelector(".build-result-startup")?.textContent.includes("refresh the application page")'));
   assert.equal(deployRequests.length, deployCountBeforePipeline + 2);
   assert.equal(await evaluate(`document.querySelector('[aria-label="Deployment result"] a').href`), 'https://new-deployment.example.test/');
   assert.equal(await evaluate('document.body.innerText.includes("deployforge.app") || document.body.innerText.includes("240+ PoPs") || document.body.innerText.includes("14ms")'), false);
@@ -375,7 +377,6 @@ try {
   await noOverflow();
   await screenshot('build-deployed-desktop.png');
   await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
-  assert.equal(await evaluate('getComputedStyle(document.querySelector(".build-result-confetti")).display'), 'none');
   assert.equal(await evaluate('getComputedStyle(document.querySelector(".build-result-emblem")).animationName'), 'none');
   await send('Emulation.setEmulatedMedia', { features: [] });
   assert.equal(buildRequests, 2, 'deployment unexpectedly started another build');
@@ -385,7 +386,7 @@ try {
   deployDelay = 1000;
   await evaluate('[...document.querySelectorAll("button")].find(item => item.textContent.trim() === "Deploy Application").click()');
   await waitFor('document.body.innerText.includes("Deployment URL not available yet")', 'missing URL fallback');
-  assert.equal(await evaluate('document.querySelector(".build-result-confetti") !== null'), false);
+  assert.equal(await evaluate('document.querySelector(".build-result-startup") !== null'), false);
   assert.equal(await evaluate(`document.querySelectorAll('[aria-label="Deployment result"] a[target="_blank"]').length`), 0);
   assert.equal(unexpectedRequests, 0, 'unexpected API requests were intercepted');
   assert.deepEqual(exceptions, [], 'browser runtime errors');
