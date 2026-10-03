@@ -1,3 +1,4 @@
+import { StatusBadge } from "./WorkspaceUI";
 import { useQuery } from "@tanstack/react-query";
 import { FiExternalLink, FiRefreshCw, FiTerminal } from "react-icons/fi";
 import { UseStateContext } from "../../context/AuthContext";
@@ -17,6 +18,6 @@ export default function BuildLogViewer({ buildId }: { buildId: string }) {
   });
   const safeLogsUrl = data?.logsUrl?.startsWith("https://") ? data.logsUrl : null;
   return <div className="dfw-log-view" aria-label="Build logs"><div className="dfw-inline-between"><strong><FiTerminal /> Build logs</strong><button type="button" className="dfw-button" disabled={isFetching} onClick={() => void refetch()} aria-label="Refresh build logs"><FiRefreshCw /></button></div>
-    {isLoading ? <p role="status">Checking provider logs...</p> : isError ? <p role="alert">Build logs could not be loaded. Use refresh to try again.</p> : <><p>Build <code>{buildId}</code>{data?.status ? ` · ${data.status}` : ""}</p>{data?.errorMessage && <p role="alert">{data.errorMessage}</p>}{safeLogsUrl ? <a className="dfw-button" href={safeLogsUrl} target="_blank" rel="noreferrer">Open provider logs <FiExternalLink /></a> : <p>No provider log link is available for this build.</p>}</>}
+    {isLoading ? <p role="status"><FiRefreshCw aria-hidden="true" className="dfw-status-loading inline-block mr-2" />Checking provider logs...</p> : isError ? <p role="alert">Build logs could not be loaded. Use refresh to try again.</p> : <><p>Build <code>{buildId}</code>{data?.status && <> <StatusBadge status={data.status} /></>}</p>{data?.errorMessage && <p role="alert">{data.errorMessage}</p>}{safeLogsUrl ? <a className="dfw-button" href={safeLogsUrl} target="_blank" rel="noreferrer">Open provider logs <FiExternalLink /></a> : <p>No provider log link is available for this build.</p>}</>}
   </div>;
 }

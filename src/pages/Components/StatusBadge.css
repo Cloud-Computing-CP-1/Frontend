@@ -1,0 +1,25 @@
+.dfw-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid;
+  border-radius: 5px;
+  padding: 3px 7px;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.4;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+.dfw-status-success { color: var(--success); border-color: rgba(34,197,94,.3); background: var(--success-bg); }
+.dfw-status-danger { color: var(--error); border-color: rgba(239,68,68,.3); background: var(--error-bg); }
+.dfw-status-progress { color: var(--badge-text); border-color: rgba(37,99,235,.3); background: var(--badge-bg); }
+.dfw-status-neutral { color: var(--text-muted); border-color: var(--border); background: var(--surface-secondary); }
+.dfw-status .dfw-status-icon { width: 13px; height: 13px; flex-shrink: 0; }
+.dfw-status-loading { animation: dfw-status-spin 1s linear infinite; }
+.dfw-status-waiting { animation: dfw-status-pulse 1.8s ease-in-out infinite; }
+@keyframes dfw-status-spin { to { transform: rotate(360deg); } }
+@keyframes dfw-status-pulse { 50% { opacity: .45; } }
+@media (prefers-reduced-motion: reduce) {
+  .dfw-status-loading, .dfw-status-waiting { animation: none; }
+}

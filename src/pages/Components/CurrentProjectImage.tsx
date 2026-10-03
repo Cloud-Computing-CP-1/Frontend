@@ -1,3 +1,4 @@
+import { StatusBadge } from "./WorkspaceUI";
 import { FiBox, FiGitBranch, FiRefreshCw } from "react-icons/fi";
 import { UsegetCurrentProjectImage } from "../../React-Query/GetCurrentProjectImage";
 import ProjectImages from "./ProjectImages";
@@ -21,7 +22,7 @@ export default function CurrentProjectImage({ projectId }: { projectId: string }
         : isError ? <div role="alert" className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-400">Could not load the current image. <button type="button" onClick={() => refetch()} className="font-semibold underline cursor-pointer">Retry</button></div>
         : !image ? <div className="rounded-xl border border-dashed border-[var(--border)] p-6 flex items-center gap-3"><span className="w-10 h-10 rounded-lg bg-[var(--surface-secondary)] text-[var(--text-muted)] border border-[var(--border)] flex items-center justify-center shrink-0"><FiBox /></span><p className="text-sm text-[var(--text-muted)]">No current image yet. Build an image to add one.</p></div>
           : <div className="rounded-xl border border-blue-500/30 bg-blue-950/20 p-4 sm:p-5">
-            <div className="flex flex-wrap items-start justify-between gap-3"><div className="min-w-0"><p className="text-sm font-semibold text-[var(--text-primary)] break-all">{image.image_tags || `Image #${image.id}`}</p><p className="inline-flex items-center gap-1.5 text-xs text-[var(--text-secondary)] mt-1"><FiGitBranch /> {image.branch}</p></div><span className="rounded-full bg-blue-500/15 border border-blue-500/30 px-2.5 py-1 text-[11px] font-semibold text-blue-400">Current · {image.status_}</span></div>
+            <div className="flex flex-wrap items-start justify-between gap-3"><div className="min-w-0"><p className="text-sm font-semibold text-[var(--text-primary)] break-all">{image.image_tags || `Image #${image.id}`}</p><p className="inline-flex items-center gap-1.5 text-xs text-[var(--text-secondary)] mt-1"><FiGitBranch /> {image.branch}</p></div><span className="inline-flex items-center gap-2"><span className="text-xs text-[var(--text-muted)]">Current</span><StatusBadge status={image.status_} /></span></div>
             {image.image_uri && <div className="mt-4"><p className="text-[11px] font-semibold uppercase tracking-wide text-[var(--text-muted)]">Image URI</p><p className="mt-1 text-xs font-mono text-blue-300 break-all">{image.image_uri}</p></div>}
             <div className="mt-4 pt-3 border-t border-[var(--border)] flex flex-wrap gap-x-6 gap-y-2 text-xs text-[var(--text-secondary)]"><span>Build ID: <span className="font-mono break-all text-[var(--text-primary)]">{image.image_digest || "—"}</span></span><span>Built: {formatDate(image.build_completed_at || image.created_at)}</span></div>
           </div>}

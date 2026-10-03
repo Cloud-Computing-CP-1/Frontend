@@ -1,3 +1,4 @@
+import { StatusBadge } from "./Components/WorkspaceUI";
 import { useState, useEffect, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useDeployProject } from "../React-Query/DeployProject";
@@ -369,24 +370,7 @@ const BuildPipeline = () => {
           )}
 
           {phase === "image-built" && (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-semibold border border-emerald-500/20 shadow-xs">
-              <FiBox className="w-3.5 h-3.5" />
-              Image Ready • Awaiting Deploy
-            </span>
-          )}
-
-          {phase === "deploying" && (
-            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-400 text-xs font-semibold border border-indigo-500/20 animate-pulse">
-              <span className="w-2 h-2 rounded-full bg-indigo-500 animate-ping" />
-              Deploying application…
-            </span>
-          )}
-
-          {phase === "live" && (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-semibold border border-emerald-500/20 shadow-xs">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              {deployment.data?.status || "Deployment completed"}
-            </span>
+            <StatusBadge status={deployment.data?.status || "COMPLETED"} />
           )}
         </div>
       </header>

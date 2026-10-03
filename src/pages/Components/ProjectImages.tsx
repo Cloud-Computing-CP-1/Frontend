@@ -1,3 +1,4 @@
+import { StatusBadge } from "./WorkspaceUI";
 import { FiBox, FiGitBranch, FiRefreshCw } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { UsegetProjectImages } from "../../React-Query/GetProjectImages";
@@ -5,14 +6,6 @@ import { UsegetProjectImages } from "../../React-Query/GetProjectImages";
 const formatDate = (value: string | null) => value
   ? new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" }).format(new Date(value))
   : "—";
-
-const statusStyle = (status: string) => {
-  const normalized = status.toLowerCase();
-  if (["ready", "success", "succeeded", "completed"].includes(normalized)) return "border-emerald-500/30 bg-emerald-500/10 text-emerald-400";
-  if (["failed", "error", "cancelled"].includes(normalized)) return "border-rose-500/30 bg-rose-500/10 text-rose-400";
-  if (["building", "pending", "queued"].includes(normalized)) return "border-blue-500/30 bg-blue-500/10 text-blue-400";
-  return "border-[var(--border)] bg-[var(--surface-secondary)] text-[var(--text-secondary)]";
-};
 
 export default function ProjectImages({ projectId, currentImageId }: { projectId: string; currentImageId?: string }) {
   const { data: images = [], isLoading, isError, isFetching, refetch } = UsegetProjectImages(projectId);
@@ -37,7 +30,7 @@ export default function ProjectImages({ projectId, currentImageId }: { projectId
       : <div className="space-y-3">{sortedImages.map(image => <article key={image.id} className="rounded-xl border border-[var(--border)] bg-[var(--surface-secondary)]/40 p-4 sm:p-5 hover:border-[var(--border-secondary)] transition-colors">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="flex items-start gap-3 min-w-0"><span className="w-9 h-9 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center shrink-0"><FiBox className="w-4 h-4" /></span><div className="min-w-0"><p className="text-sm font-semibold text-[var(--text-primary)] break-all">{image.image_tags || `Image #${image.id}`}</p><p className="inline-flex items-center gap-1 text-xs text-[var(--text-muted)] mt-1"><FiGitBranch /> {image.branch}</p></div></div>
-          <div className="flex items-center gap-2 shrink-0">{currentImageId === image.id && <span className="rounded-full border border-blue-500/30 bg-blue-500/15 px-2.5 py-1 text-[11px] font-semibold text-blue-400">Current</span>}<span className={`rounded-full border px-2.5 py-1 text-[11px] font-semibold ${statusStyle(image.status_)}`}>{image.status_}</span></div>
+          <div className="flex items-center gap-2 shrink-0">{currentImageId === image.id && <span className="rounded-full border border-blue-500/30 bg-blue-500/15 px-2.5 py-1 text-[11px] font-semibold text-blue-400">Current</span>}<StatusBadge status={image.status_} /></div>
         </div>
         {image.image_uri && <div className="mt-4"><p className="text-[11px] font-semibold uppercase tracking-wide text-[var(--text-muted)]">Image URI</p><p className="mt-1 text-xs font-mono text-blue-300 break-all">{image.image_uri}</p></div>}
         {image.image_digest && <div className="mt-3"><p className="text-[11px] font-semibold uppercase tracking-wide text-[var(--text-muted)]">Build ID</p><p className="mt-1 text-xs font-mono text-[var(--text-secondary)] break-all">{image.image_digest}</p></div>}
