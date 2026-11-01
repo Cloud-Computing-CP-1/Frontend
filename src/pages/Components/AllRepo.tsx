@@ -115,7 +115,7 @@ const RepoShow = ({ repos = [], onClose, onBuild }: RepoShowProps) => {
 
                             <div>
                                 <h1 className="text-lg font-semibold text-[var(--text-primary)]">
-                                    Your repositories
+                                    Your repositoriess
                                 </h1>
 
                                 <p className="text-xs text-[var(--text-secondary)]">
