@@ -42,12 +42,12 @@ const buildResult = {
 };
 const deployments = [
   { id: '41', project_id: '1', cloud_provider: 'GCP', status: 'FAILED', deployment_url: null, created_at: '2026-09-24T10:00:00Z' },
-  { id: '43', project_id: '1', cloud_provider: 'AWS', status: 'RUNNING', deployment_url: 'https://api-service.deployforge.site', created_at: '2026-09-26T10:00:00Z' },
+  { id: '43', project_id: '1', cloud_provider: 'AWS', status: 'RUNNING', deployment_url: 'https://api-service.deployforge.online', created_at: '2026-09-26T10:00:00Z' },
   { id: '42', project_id: '1', cloud_provider: 'AZURE', status: 'STOPPED', deployment_url: 'javascript:alert(1)', created_at: '2026-09-25T10:00:00Z' },
   { id: '99', project_id: '2', cloud_provider: 'AWS', status: 'RUNNING', deployment_url: 'https://another-project.example.test', created_at: '2026-09-27T10:00:00Z' },
-].map(item => ({ ...item, image_id: '11', region: 'ap-south-1', provider_service: 'ECS_FARGATE', hostname: 'api-service.deployforge.site', provider_resource_id: `arn:aws:ecs:ap-south-1:123456789:service/${'long-resource-'.repeat(12)}`, updated_at: item.created_at }));
+].map(item => ({ ...item, image_id: '11', region: 'ap-south-1', provider_service: 'ECS_FARGATE', hostname: 'api-service.deployforge.online', provider_resource_id: `arn:aws:ecs:ap-south-1:123456789:service/${'long-resource-'.repeat(12)}`, updated_at: item.created_at }));
 const projects = [
-  { id: '1', projects_name: 'api-service', statuss: 'RUNNING', current_image_id: '11', deployment_url: 'https://api-service.deployforge.site' },
+  { id: '1', projects_name: 'api-service', statuss: 'RUNNING', current_image_id: '11', deployment_url: 'https://api-service.deployforge.online' },
   { id: '2', projects_name: 'web-app', statuss: 'STOPPED', current_image_id: null },
   { id: '3', projects_name: 'worker', statuss: 'FAILED', current_image_id: null },
 ].map(project => ({ ...project, user_id: '17', repo_id: project.id, repo_name: `https://github.com/example/${project.projects_name}.git`, repo_owner: 'example', branch: 'main', cloud_provider: 'AWS', created_at: '2026-09-19T12:00:00Z', updated_at: '2026-09-20T12:00:00Z' }));
@@ -240,7 +240,7 @@ try {
   await send('Page.bringToFront');
   await evaluate(`document.querySelector('.deployment-record [aria-label="Copy deployment URL"]').click()`);
   await waitFor('document.body.innerText.includes("Copied!")', 'URL copied');
-  assert.equal(await evaluate('navigator.clipboard.readText()'), 'https://api-service.deployforge.site/');
+  assert.equal(await evaluate('navigator.clipboard.readText()'), 'https://api-service.deployforge.online/');
   await evaluate('document.querySelector(".deployment-toolbar select").value = "FAILED"; document.querySelector(".deployment-toolbar select").dispatchEvent(new Event("change", { bubbles:true }))');
   await waitFor('document.querySelectorAll(".deployment-record").length === 1', 'deployment status filter');
   assert.equal(await evaluate('document.querySelector(".deployment-record").dataset.deploymentId'), '41');
